@@ -1,4 +1,4 @@
-package com.ocado.treeviewdemo;
+package com.demo.treeview;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
