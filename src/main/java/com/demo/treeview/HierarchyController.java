@@ -18,13 +18,13 @@ public class HierarchyController {
     private final Content isle0 = new Content("parent", "href", Collections.emptyList(), Arrays.asList(isle1));
     private final Content isle2 = new Content("multi", "href", Collections.emptyList(), Arrays.asList(isle0, isle1));
 
-    @GetMapping(value="/data", produces = "application/json")
+    @GetMapping(value = "/data", produces = "application/json")
     @ResponseBody
     public List<Content> getContent() {
         return Arrays.asList(isle0, isle1, isle2, isle0);
     }
 
-@Value(staticConstructor = "of")
+    @Value(staticConstructor = "of")
     public static class Content {
         private String text; //: 'Parent 1',
         private String href; //: '#parent1',
