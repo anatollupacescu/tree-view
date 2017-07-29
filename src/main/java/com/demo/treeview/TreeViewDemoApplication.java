@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TreeviewDemoApplication {
+public class TreeViewDemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TreeviewDemoApplication.class, args);
+        SpringApplication.run(TreeViewDemoApplication.class, args);
     }
 }
