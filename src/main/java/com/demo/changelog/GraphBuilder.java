@@ -14,7 +14,7 @@ public class GraphBuilder {
         this.graph = graph;
     }
 
-    Graph build(List<GraphChange> changes) {
+    public Graph build(List<GraphChange> changes) {
         Objects.requireNonNull(changes);
         for (GraphChange change : changes) {
             applyChange(change);
@@ -37,22 +37,27 @@ public class GraphBuilder {
 
     private void removeChild(GraphChange change) {
         ChangeData data = change.getData();
-        String name = (String) data.get("name");
-        String parentNodeName = (String) data.get("parent");
-        Node parentNode = graph.findChildByName(parentNodeName).orElse(graph);
+        String name = (String) data.get(ChangeDataParam.NAME);
+        List<String> parentNodePath = (List<String>) data.get(ChangeDataParam.PARENT);
+        Node parentNode;
+        if(parentNodePath == null || parentNodePath.isEmpty()) {
+            parentNode = graph;
+        } else {
+            parentNode = graph.navigate(parentNodePath);
+        }
         Node node = new Node(name, parentNode);
         parentNode.removeChild(node);
     }
 
     private void addChild(GraphChange change) {
         ChangeData data = change.getData();
-        String name = (String) data.get("name");
-        String parentNodeName = (String) data.get("parent");
+        String name = (String) data.get(ChangeDataParam.NAME);
+        List<String> parentNodePath = (List<String>) data.get(ChangeDataParam.PARENT);
         Node parentNode;
-        if(parentNodeName == null) {
+        if(parentNodePath == null) {
             parentNode = graph;
         } else {
-            parentNode = graph.findChildByNameOrThrow(parentNodeName);
+            parentNode = graph.navigate(parentNodePath);
         }
         Node node = new Node(name, parentNode);
         parentNode.addChild(node);

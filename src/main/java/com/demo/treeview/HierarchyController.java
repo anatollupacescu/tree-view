@@ -73,7 +73,8 @@ public class HierarchyController {
     public String removeChildAtLocation(@Valid @RequestBody GraphRequest req,
                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
-        controller.removeNodeAtLocation(graphName, location);
+        String nodeName = req.childName;
+        controller.removeNodeAtLocation(graphName, location, nodeName);
         return "redirect:/graph/list/" + graphName;
     }
 
