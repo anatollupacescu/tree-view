@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GraphBuilderTest {
 
-    private GraphBuilder builder = new GraphBuilder(Graph.withName("test"));
+    private GraphBuilder builder = new GraphBuilder("test");
 
     @Test(expected = IllegalArgumentException.class)
     public void canNotRemoveNonExistentChild() {

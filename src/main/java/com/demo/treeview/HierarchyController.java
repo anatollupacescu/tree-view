@@ -1,11 +1,15 @@
 package com.demo.treeview;
 
-import com.demo.controller.GraphController;
+import com.demo.controller.GraphService;
 import lombok.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,22 +17,23 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/graph")
 public class HierarchyController {
 
-    private final GraphController controller = new GraphController();
+    private @Autowired
+    GraphService graphService;
 
     @GetMapping
     @ResponseBody
     public Set<String> get() {
-        return controller.listGraphNames();
+        return graphService.listGraphNames();
     }
 
     @GetMapping(value = "/render/{name}", produces = "application/json")
     @ResponseBody
-    public List<Content> renderGraph(@PathVariable String name) {
+    public List<Content> renderGraph(@PathVariable @NotNull String name) {
         return toContentList(name, Collections.emptyList());
     }
 
     private List<Content> toContentList(String name, List<String> location) {
-        List<String> titles = controller.listNodesAtLocation(name, location);
+        List<String> titles = graphService.listNodesAtLocation(name, location);
         return titles.stream()
                 .map(st -> {
                     List<String> subLocation = new ArrayList<>(location);
@@ -39,19 +44,13 @@ public class HierarchyController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping(value = "/create")
-    public String createGraph(@RequestBody String name) {
-        controller.createGraph(name);
-        return "redirect:/graph";
-    }
-
     @PostMapping(value = "/create/{graphName}", consumes = "application/json")
-    public String createChildAtLocation(@Valid @RequestBody GraphRequest req,
+    public ResponseEntity<String> createChildAtLocation(@Valid @RequestBody GraphRequest req,
                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String title = req.childName;
-        controller.createNodeAtLocation(graphName, location, title);
-        return "redirect:/graph/list/" + graphName;
+        graphService.createNodeAtLocation(graphName, location, title);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/list/{graphName}", produces = "application/json")
@@ -59,23 +58,21 @@ public class HierarchyController {
     public List<String> getChildrenAtLocation(@Valid @RequestBody GraphRequest req,
                                               @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
-        List<String> list = controller.listNodesAtLocation(graphName, location);
-        return list;
-    }
-
-    @DeleteMapping(value = "/{graphName}")
-    public String remove(@PathVariable String graphName) {
-        controller.removeGraph(graphName);
-        return "redirect:/graph";
+        return graphService.listNodesAtLocation(graphName, location);
     }
 
     @PostMapping(value = "/delete/{graphName}")
-    public String removeChildAtLocation(@Valid @RequestBody GraphRequest req,
+    public ResponseEntity<String> removeChildAtLocation(@Valid @RequestBody GraphRequest req,
                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String nodeName = req.childName;
-        controller.removeNodeAtLocation(graphName, location, nodeName);
-        return "redirect:/graph/list/" + graphName;
+        graphService.removeNodeAtLocation(graphName, location, nodeName);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @Value

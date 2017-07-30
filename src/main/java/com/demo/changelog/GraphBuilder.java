@@ -10,8 +10,8 @@ public class GraphBuilder {
 
     private final Graph graph;
 
-    public GraphBuilder(Graph graph) {
-        this.graph = graph;
+    public GraphBuilder(String name) {
+        this.graph = Graph.withName(name);
     }
 
     public Graph build(List<GraphChange> changes) {

@@ -68,6 +68,9 @@ public class Node {
     }
 
     public static class NodeNotFoundException extends RuntimeException {
+        public NodeNotFoundException() {
+            super("Node not found");
+        }
     }
 
     private Predicate<Node> byName(String name) {

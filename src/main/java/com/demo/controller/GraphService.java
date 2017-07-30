@@ -2,41 +2,40 @@ package com.demo.controller;
 
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
-import com.demo.persistence.ChangeManager;
-import com.demo.persistence.GraphManager;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class GraphController {
+public class GraphService {
 
-    GraphManager manager = new GraphManager();
-    ChangeManager changeManager = new ChangeManager(manager);
+    private final ChangeService changeService;
+
+    public GraphService(ChangeService changeService) {
+        this.changeService = changeService;
+    }
 
     public Set<String> listGraphNames() {
-        return manager.getNames();
+        return changeService.getNames();
     }
 
     public List<String> listNodesAtLocation(String name, List<String> location) {
-        Graph graph = manager.getGraphByName(name);
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(location);
+        Graph graph = changeService.build(name);
         List<Node> childrenAtLocation = graph.navigate(location).getChildren();
         return childrenAtLocation.stream().map(Node::getName).collect(Collectors.toList());
     }
 
-    public void createGraph(String name) {
-        manager.createGraph(name);
-    }
-
     public void createNodeAtLocation(String graphName, List<String> location, String title) {
-        changeManager.createNodeAtLocation(graphName, location, title);
-    }
-
-    public void removeGraph(String graphName) {
-        manager.removeGraph(graphName);
+        Objects.requireNonNull(graphName);
+        changeService.createNodeAtLocation(graphName, location, title);
     }
 
     public void removeNodeAtLocation(String graphName, List<String> location, String title) {
-        changeManager.removeNodeAtLocation(graphName, location, title);
+        Objects.requireNonNull(graphName);
+        Objects.requireNonNull(location);
+        changeService.removeNodeAtLocation(graphName, location, title);
     }
 }
