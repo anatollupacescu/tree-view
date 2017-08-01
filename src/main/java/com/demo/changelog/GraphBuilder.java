@@ -1,16 +1,18 @@
 package com.demo.changelog;
 
+import com.demo.api.Api;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
 
 import java.util.List;
 import java.util.Objects;
 
-public class GraphBuilder {
+public class GraphBuilder implements Api.GraphBuilder {
 
     public Graph build(String name, List<GraphChange> changes) {
-        Graph graph = Graph.withName(name);
+        Objects.requireNonNull(name);
         Objects.requireNonNull(changes);
+        Graph graph = Graph.withName(name);
         for (GraphChange change : changes) {
             applyChange(graph, change);
         }
@@ -56,5 +58,10 @@ public class GraphBuilder {
         }
         Node node = new Node(name, parentNode);
         parentNode.addChild(node);
+    }
+
+    @Override
+    public Graph buildGraph(List<GraphChange> changes) {
+        return build("test", changes);
     }
 }

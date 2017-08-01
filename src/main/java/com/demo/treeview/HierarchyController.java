@@ -1,6 +1,6 @@
 package com.demo.treeview;
 
-import com.demo.controller.GraphService;
+import com.demo.controller.GraphController;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/graph")
 public class HierarchyController {
 
-    private @Autowired
-    GraphService graphService;
+    @Autowired private GraphController graphService;
 
     @GetMapping
     @ResponseBody
     public Set<String> get() {
-        return graphService.listGraphNames();
+        return graphService.getNames();
     }
 
     @GetMapping(value = "/render/{name}", produces = "application/json")
@@ -33,15 +33,16 @@ public class HierarchyController {
     }
 
     private List<Content> toContentList(String name, List<String> location) {
-        List<String> titles = graphService.listNodesAtLocation(name, location);
-        return titles.stream()
-                .map(st -> {
-                    List<String> subLocation = new ArrayList<>(location);
-                    subLocation.add(st);
-                    List<Content> nodes = toContentList(name, subLocation);
-                    return Content.of(st, null, null, nodes);
-                })
-                .collect(Collectors.toList());
+        List<String> titles = graphService.list(name, location);
+        final Function<String, Content> nodeToContent = node -> toContentObject(name, location, node);
+        return titles.stream().map(nodeToContent).collect(Collectors.toList());
+    }
+
+    private Content toContentObject(String name, List<String> location, String node) {
+        List<String> subLocation = new ArrayList<>(location);
+        subLocation.add(node);
+        List<Content> nodes = toContentList(name, subLocation);
+        return Content.of(node, null, null, nodes);
     }
 
     @PostMapping(value = "/create/{graphName}", consumes = "application/json")
@@ -49,7 +50,7 @@ public class HierarchyController {
                                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String title = req.childName;
-        graphService.createNodeAtLocation(graphName, location, title);
+        graphService.add(graphName, location, title);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -58,7 +59,7 @@ public class HierarchyController {
     public List<String> getChildrenAtLocation(@Valid @RequestBody GraphRequest req,
                                               @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
-        return graphService.listNodesAtLocation(graphName, location);
+        return graphService.list(graphName, location);
     }
 
     @PostMapping(value = "/delete/{graphName}")
@@ -66,7 +67,7 @@ public class HierarchyController {
                                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String nodeName = req.childName;
-        graphService.removeNodeAtLocation(graphName, location, nodeName);
+        graphService.remove(graphName, location, nodeName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

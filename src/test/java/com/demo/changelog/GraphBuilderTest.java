@@ -17,7 +17,7 @@ public class GraphBuilderTest {
     private static final String GRAPH_NAME = "graph";
     private static final GraphBuilder builder = new GraphBuilder();
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Node.NodeNotFoundException.class)
     public void canNotRemoveNonExistentChild() {
         ChangeData data = new ChangeData();
         data.put(ChangeDataParam.NAME, "lolo");
@@ -64,7 +64,7 @@ public class GraphBuilderTest {
         builder.build(GRAPH_NAME, changes);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Node.NodeNotFoundException.class)
     public void canNotAddExistentChild() {
         ChangeData data = new ChangeData();
         data.put(ChangeDataParam.NAME, "lolo");

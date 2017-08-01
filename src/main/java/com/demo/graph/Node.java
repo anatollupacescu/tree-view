@@ -24,7 +24,7 @@ public class Node {
     public void addChild(Node node) {
         Objects.requireNonNull(node);
         if (children.contains(node)) {
-            throw new IllegalArgumentException();
+            throw new NodeNotFoundException();
         }
         children.add(node);
     }
@@ -32,7 +32,7 @@ public class Node {
     public void removeChild(Node node) {
         Objects.requireNonNull(node);
         if (!children.remove(node)) {
-            throw new IllegalArgumentException();
+            throw new NodeNotFoundException();
         }
     }
 
