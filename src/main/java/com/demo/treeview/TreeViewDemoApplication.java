@@ -1,7 +1,9 @@
 package com.demo.treeview;
 
+import com.demo.changelog.GraphBuilder;
 import com.demo.controller.ChangeService;
 import com.demo.controller.GraphService;
+import com.demo.controller.GraphValidator;
 import com.demo.persistence.ChangePersistence;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +19,9 @@ public class TreeViewDemoApplication {
     @Bean
     public GraphService graphController() {
         ChangePersistence persistence = new ChangePersistence();
-        ChangeService changeService = new ChangeService(persistence);
-        return new GraphService(changeService);
+        GraphValidator validator = new GraphValidator();
+        ChangeService changeService = new ChangeService(persistence, validator);
+        GraphBuilder graphBuilder = new GraphBuilder();
+        return new GraphService(graphBuilder, changeService);
     }
 }

@@ -8,39 +8,34 @@ import java.util.Objects;
 
 public class GraphBuilder {
 
-    private final Graph graph;
-
-    public GraphBuilder(String name) {
-        this.graph = Graph.withName(name);
-    }
-
-    public Graph build(List<GraphChange> changes) {
+    public Graph build(String name, List<GraphChange> changes) {
+        Graph graph = Graph.withName(name);
         Objects.requireNonNull(changes);
         for (GraphChange change : changes) {
-            applyChange(change);
+            applyChange(graph, change);
         }
         return graph;
     }
 
-    private void applyChange(GraphChange change) {
+    private void applyChange(Graph graph, GraphChange change) {
         switch (change.getType()) {
             case ADD_CHILD:
-                addChild(change);
+                addChild(graph, change);
                 break;
             case REMOVE_CHILD:
-                removeChild(change);
+                removeChild(graph, change);
                 break;
             default:
                 throw new IllegalArgumentException();
         }
     }
 
-    private void removeChild(GraphChange change) {
+    private void removeChild(Graph graph, GraphChange change) {
         ChangeData data = change.getData();
         String name = (String) data.get(ChangeDataParam.NAME);
         List<String> parentNodePath = (List<String>) data.get(ChangeDataParam.PARENT);
         Node parentNode;
-        if(parentNodePath == null || parentNodePath.isEmpty()) {
+        if (parentNodePath == null || parentNodePath.isEmpty()) {
             parentNode = graph;
         } else {
             parentNode = graph.navigate(parentNodePath);
@@ -49,12 +44,12 @@ public class GraphBuilder {
         parentNode.removeChild(node);
     }
 
-    private void addChild(GraphChange change) {
+    private void addChild(Graph graph, GraphChange change) {
         ChangeData data = change.getData();
         String name = (String) data.get(ChangeDataParam.NAME);
         List<String> parentNodePath = (List<String>) data.get(ChangeDataParam.PARENT);
         Node parentNode;
-        if(parentNodePath == null) {
+        if (parentNodePath == null) {
             parentNode = graph;
         } else {
             parentNode = graph.navigate(parentNodePath);

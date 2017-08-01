@@ -1,20 +1,21 @@
 package com.demo.controller;
 
-import com.demo.changelog.*;
-import com.demo.graph.Graph;
+import com.demo.changelog.ChangeData;
+import com.demo.changelog.ChangeDataParam;
+import com.demo.changelog.ChangeType;
+import com.demo.changelog.GraphChange;
 import com.demo.persistence.ChangePersistence;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class ChangeService {
 
     private final ChangePersistence persistence;
+    private final GraphValidator validator;
 
-    public ChangeService(ChangePersistence persistence) {
+    public ChangeService(ChangePersistence persistence, GraphValidator validator) {
         this.persistence = persistence;
+        this.validator = validator;
     }
 
     public void createNodeAtLocation(String graph, List<String> location, String title) {
@@ -25,13 +26,6 @@ public class ChangeService {
         saveValidChange(graph, change);
     }
 
-    private ChangeData buildNameParentData(String title, List<String> location) {
-        ChangeData data = new ChangeData();
-        data.put(ChangeDataParam.NAME, title);
-        data.put(ChangeDataParam.PARENT, location);
-        return data;
-    }
-
     public void removeNodeAtLocation(String graph, List<String> location, String name) {
         Objects.requireNonNull(location);
         Objects.requireNonNull(name);
@@ -40,9 +34,11 @@ public class ChangeService {
         saveValidChange(graph, change);
     }
 
-    public Graph build(String graph) {
-        List<GraphChange> changes = getChangesOrFail(graph);
-        return new GraphBuilder(graph).build(changes);
+    private ChangeData buildNameParentData(String title, List<String> location) {
+        ChangeData data = new ChangeData();
+        data.put(ChangeDataParam.NAME, title);
+        data.put(ChangeDataParam.PARENT, location);
+        return data;
     }
 
     private void saveValidChange(String graph, GraphChange change) {
@@ -52,29 +48,19 @@ public class ChangeService {
 
     private void validateChange(String name, GraphChange change) {
         List<GraphChange> changeList = persistence.get(name);
-        List<GraphChange> changeListToValidate = safeCreateCopy(changeList);
-        changeListToValidate.add(change);
-        new GraphBuilder(name).build(changeListToValidate);
+        validator.validate(changeList, change);
     }
 
-    private List<GraphChange> safeCreateCopy(List<GraphChange> changeList) {
-        if(changeList == null) {
-            return new ArrayList<>();
-        } else {
-            return new ArrayList<>(changeList);
-        }
-    }
-
-    private List<GraphChange> getChangesOrFail(String graph) {
+    public List<GraphChange> getChangesOrFail(String graph) {
         List<GraphChange> changes = persistence.get(graph);
-        if(changes == null) {
+        if (changes == null) {
             throw new GraphNotFoundException(graph);
         }
         return new ArrayList<>(changes);
     }
 
     public Set<String> getNames() {
-        return persistence.keySet();
+        return new HashSet<>(persistence.keySet());
     }
 
     public class GraphNotFoundException extends RuntimeException {

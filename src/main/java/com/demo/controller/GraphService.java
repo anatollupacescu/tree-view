@@ -1,5 +1,7 @@
 package com.demo.controller;
 
+import com.demo.changelog.GraphBuilder;
+import com.demo.changelog.GraphChange;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
 
@@ -10,9 +12,11 @@ import java.util.stream.Collectors;
 
 public class GraphService {
 
+    private final GraphBuilder graphBuilder;
     private final ChangeService changeService;
 
-    public GraphService(ChangeService changeService) {
+    public GraphService(GraphBuilder graphBuilder, ChangeService changeService) {
+        this.graphBuilder = graphBuilder;
         this.changeService = changeService;
     }
 
@@ -23,9 +27,14 @@ public class GraphService {
     public List<String> listNodesAtLocation(String name, List<String> location) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(location);
-        Graph graph = changeService.build(name);
+        Graph graph = build(name);
         List<Node> childrenAtLocation = graph.navigate(location).getChildren();
         return childrenAtLocation.stream().map(Node::getName).collect(Collectors.toList());
+    }
+
+    private Graph build(String graph) {
+        List<GraphChange> changes = changeService.getChangesOrFail(graph);
+        return graphBuilder.build(graph, changes);
     }
 
     public void createNodeAtLocation(String graphName, List<String> location, String title) {

@@ -23,7 +23,7 @@ public class Node {
 
     public void addChild(Node node) {
         Objects.requireNonNull(node);
-        if(children.contains(node)) {
+        if (children.contains(node)) {
             throw new IllegalArgumentException();
         }
         children.add(node);
@@ -31,7 +31,7 @@ public class Node {
 
     public void removeChild(Node node) {
         Objects.requireNonNull(node);
-        if(!children.remove(node)) {
+        if (!children.remove(node)) {
             throw new IllegalArgumentException();
         }
     }
@@ -59,8 +59,8 @@ public class Node {
     public Node navigate(List<String> location) {
         Objects.requireNonNull(location);
         Node destination = this;
-        if(location.isEmpty()) return destination;
-        for(String name : location) {
+        if (location.isEmpty()) return destination;
+        for (String name : location) {
             destination = destination.findChild(byName(name))
                     .orElseThrow(NodeNotFoundException::new);
         }
@@ -74,7 +74,7 @@ public class Node {
     }
 
     private Predicate<Node> byName(String name) {
-        if(name == null) return (node -> false);
+        if (name == null) return (node -> false);
         return (node -> name.equalsIgnoreCase(node.getName()));
     }
 

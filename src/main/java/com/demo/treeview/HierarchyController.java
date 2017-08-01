@@ -46,7 +46,7 @@ public class HierarchyController {
 
     @PostMapping(value = "/create/{graphName}", consumes = "application/json")
     public ResponseEntity<String> createChildAtLocation(@Valid @RequestBody GraphRequest req,
-                                        @PathVariable String graphName) {
+                                                        @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String title = req.childName;
         graphService.createNodeAtLocation(graphName, location, title);
@@ -63,7 +63,7 @@ public class HierarchyController {
 
     @PostMapping(value = "/delete/{graphName}")
     public ResponseEntity<String> removeChildAtLocation(@Valid @RequestBody GraphRequest req,
-                                        @PathVariable String graphName) {
+                                                        @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String nodeName = req.childName;
         graphService.removeNodeAtLocation(graphName, location, nodeName);

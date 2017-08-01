@@ -1,5 +1,6 @@
 package com.demo.controller;
 
+import com.demo.changelog.GraphBuilder;
 import com.demo.graph.Node;
 import com.demo.persistence.ChangePersistence;
 import org.junit.Test;
@@ -7,10 +8,8 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class GraphServiceTest {
 
@@ -18,10 +17,12 @@ public class GraphServiceTest {
     private static final String NODE_NAME1 = "node1";
     private static final String NODE_NAME2 = "node2";
 
-    public GraphService createDefault(){
+    public GraphService createDefault() {
         ChangePersistence persistence = new ChangePersistence();
-        ChangeService changeService = new ChangeService(persistence);
-        return new GraphService(changeService);
+        GraphValidator validator = new GraphValidator();
+        ChangeService changeService = new ChangeService(persistence, validator);
+        GraphBuilder graphBuilder = new GraphBuilder();
+        return new GraphService(graphBuilder, changeService);
     }
 
     @Test

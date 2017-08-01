@@ -1,16 +1,16 @@
 package com.demo.persistence;
 
+import com.demo.changelog.GraphChange;
 import com.demo.controller.ChangeService;
-import com.demo.graph.Graph;
+import com.demo.controller.GraphValidator;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class ChangeServiceTest {
 
@@ -21,17 +21,17 @@ public class ChangeServiceTest {
     @Before
     public void setUp() {
         ChangePersistence persistence = new ChangePersistence();
-        changeService = new ChangeService(persistence);
+        GraphValidator validator = new GraphValidator();
+        changeService = new ChangeService(persistence, validator);
     }
 
     @Test
     public void canAddNode() {
         changeService.createNodeAtLocation(TEST, Collections.emptyList(), "unu");
         changeService.createNodeAtLocation(TEST, Collections.singletonList("unu"), "doi");
-        Graph updatedGraph = changeService.build(TEST);
+        List<GraphChange> updatedGraph = changeService.getChangesOrFail(TEST);
         assertThat(updatedGraph, is(notNullValue()));
-        assertThat(updatedGraph.getChildren().isEmpty(), is(equalTo(false)));
-        assertThat(updatedGraph.navigate(Collections.singletonList("unu")).getChildren().isEmpty(), is(equalTo(false)));
+        assertThat(updatedGraph.size(), is(equalTo(2)));
     }
 
     @Test
@@ -39,8 +39,8 @@ public class ChangeServiceTest {
         changeService.createNodeAtLocation(TEST, Collections.emptyList(), "unu");
         changeService.createNodeAtLocation(TEST, Collections.singletonList("unu"), "doi");
         changeService.removeNodeAtLocation(TEST, Collections.emptyList(), "unu");
-        Graph updatedGraph = changeService.build(TEST);
+        List<GraphChange> updatedGraph = changeService.getChangesOrFail(TEST);
         assertThat(updatedGraph, is(notNullValue()));
-        assertThat(updatedGraph.getChildren().size(), is(equalTo(0)));
+        assertThat(updatedGraph.size(), is(equalTo(3)));
     }
 }

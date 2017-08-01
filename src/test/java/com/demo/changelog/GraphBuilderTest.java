@@ -14,7 +14,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GraphBuilderTest {
 
-    private GraphBuilder builder = new GraphBuilder("test");
+    private static final String GRAPH_NAME = "graph";
+    private static final GraphBuilder builder = new GraphBuilder();
 
     @Test(expected = IllegalArgumentException.class)
     public void canNotRemoveNonExistentChild() {
@@ -22,7 +23,7 @@ public class GraphBuilderTest {
         data.put(ChangeDataParam.NAME, "lolo");
         GraphChange graphChange = new GraphChange(ChangeType.REMOVE_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange);
-        builder.build(changes);
+        builder.build(GRAPH_NAME, changes);
     }
 
     @Test
@@ -31,7 +32,7 @@ public class GraphBuilderTest {
         data.put(ChangeDataParam.NAME, "lolo");
         GraphChange graphChange = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange);
-        Graph graph = builder.build(changes);
+        Graph graph = builder.build(GRAPH_NAME, changes);
         Node lolo = graph.findChildByNameOrThrow("lolo");
         assertThat(lolo, is(notNullValue()));
     }
@@ -46,7 +47,7 @@ public class GraphBuilderTest {
         data.put(ChangeDataParam.PARENT, Collections.singletonList("lolo"));
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange1, graphChange2);
-        Graph graph = builder.build(changes);
+        Graph graph = builder.build(GRAPH_NAME, changes);
         Node lolo = graph.findChildByNameOrThrow("lolo");
         assertThat(lolo, is(notNullValue()));
         Node sub = lolo.findChildByNameOrThrow("sub");
@@ -60,7 +61,7 @@ public class GraphBuilderTest {
         data.put(ChangeDataParam.PARENT, Collections.singletonList("lolo"));
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange2);
-        builder.build(changes);
+        builder.build(GRAPH_NAME, changes);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -72,6 +73,6 @@ public class GraphBuilderTest {
         data.put(ChangeDataParam.NAME, "lolo");
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange1, graphChange2);
-        builder.build(changes);
+        builder.build(GRAPH_NAME, changes);
     }
 }
