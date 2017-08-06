@@ -22,7 +22,7 @@ public class HierarchyController {
 
     @GetMapping
     @ResponseBody
-    public Set<String> get() {
+    public Set<String> getNames() {
         return graphService.getNames();
     }
 
@@ -46,24 +46,28 @@ public class HierarchyController {
     }
 
     @PostMapping(value = "/create/{graphName}", consumes = "application/json")
-    public ResponseEntity<String> createChildAtLocation(@Valid @RequestBody GraphRequest req,
-                                                        @PathVariable String graphName) {
+    public ResponseEntity<String> add(@Valid @RequestBody GraphRequest req,
+                                       @PathVariable String graphName) {
+    	Objects.nonNull(graphName);
+    	Objects.nonNull(req);
+    	Objects.nonNull(req.childName);
+    	Objects.nonNull(req.location);
         List<String> location = Arrays.asList(req.location);
         String title = req.childName;
         graphService.add(graphName, location, title);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("great success", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/list/{graphName}", produces = "application/json")
     @ResponseBody
-    public List<String> getChildrenAtLocation(@Valid @RequestBody GraphRequest req,
+    public List<String> list(@Valid @RequestBody GraphRequest req,
                                               @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         return graphService.list(graphName, location);
     }
 
     @PostMapping(value = "/delete/{graphName}")
-    public ResponseEntity<String> removeChildAtLocation(@Valid @RequestBody GraphRequest req,
+    public ResponseEntity<String> remove(@Valid @RequestBody GraphRequest req,
                                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String nodeName = req.childName;
@@ -73,10 +77,14 @@ public class HierarchyController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        String message = ex.getMessage();
+        if(message == null || message.isEmpty()) {
+        	message = ex.getClass().getName();
+        }
+		return ResponseEntity.badRequest().body(message);
     }
 
-    @Value
+    @Value(staticConstructor = "of")
     public static class GraphRequest {
         private String childName;
         private String[] location;

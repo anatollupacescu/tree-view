@@ -42,8 +42,7 @@ public class GraphBuilder implements Api.GraphBuilder {
         } else {
             parentNode = graph.navigate(parentNodePath);
         }
-        Node node = new Node(name, parentNode);
-        parentNode.removeChild(node);
+        parentNode.removeChild(name);
     }
 
     private void addChild(Graph graph, GraphChange change) {
@@ -56,8 +55,7 @@ public class GraphBuilder implements Api.GraphBuilder {
         } else {
             parentNode = graph.navigate(parentNodePath);
         }
-        Node node = new Node(name, parentNode);
-        parentNode.addChild(node);
+        parentNode.addChild(name);
     }
 
     @Override

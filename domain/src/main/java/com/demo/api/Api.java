@@ -24,10 +24,15 @@ public class Api {
 
     public interface GraphChangeService {
         GraphChange remove(List<String> location, String name);
-
         GraphChange add(List<String> location, String name);
     }
 
-    public static class GraphNotFoundException extends RuntimeException {
+    public interface GraphController {
+        Set<String> getNames();
+        List<String> list(String graphName, List<String> location);
+        void add(String graphName, List<String> location, String changeData);
+        void remove(String graphName, List<String> location, String changeData);
     }
+
+    public static class GraphNotFoundException extends RuntimeException { }
 }

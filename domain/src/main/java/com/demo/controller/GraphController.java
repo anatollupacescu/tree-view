@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class GraphController {
+public class GraphController implements Api.GraphController {
 
     private final Api.Persistence<GraphChange> persistence;
     private final Api.GraphChangeService graphChangeService;
@@ -25,16 +25,19 @@ public class GraphController {
         this.viewer = viewer;
     }
 
+    @Override
     public Set<String> getNames() {
         return persistence.listNames();
     }
 
+    @Override
     public List<String> list(String graphName, List<String> location) {
         List<GraphChange> changesByName = persistence.getChangesByName(graphName);
         Graph graph = builder.buildGraph(changesByName);
         return viewer.listNodeTitlesAtLocation(graph, location);
     }
 
+    @Override
     public void add(String graphName, List<String> location, String changeData) {
         GraphChange change = graphChangeService.add(location, changeData);
         List<GraphChange> changesByName = persistence.getChangesByName(graphName);
@@ -42,6 +45,7 @@ public class GraphController {
         persistence.storeChange(graphName, change);
     }
 
+    @Override
     public void remove(String graphName, List<String> location, String changeData) {
         GraphChange change = graphChangeService.remove(location, changeData);
         List<GraphChange> changesByName = persistence.getChangesByName(graphName);

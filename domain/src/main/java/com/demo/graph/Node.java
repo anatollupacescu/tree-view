@@ -6,13 +6,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class Node {
+public class Node implements GraphNode {
 
     private final String name;
     private final Node parent;
     private final List<Node> children = new ArrayList<>();
 
-    public Node(String name, Node parent) {
+    Node(String name, Node parent) {
         this.name = name;
         this.parent = parent;
     }
@@ -21,6 +21,12 @@ public class Node {
         return parent;
     }
 
+    public void addChild(String name) {
+        Node node = new Node(name, this);
+        addChild(node);
+    }
+
+    @Override
     public void addChild(Node node) {
         Objects.requireNonNull(node);
         if (children.contains(node)) {
@@ -29,6 +35,7 @@ public class Node {
         children.add(node);
     }
 
+    @Override
     public void removeChild(Node node) {
         Objects.requireNonNull(node);
         if (!children.remove(node)) {
@@ -36,6 +43,12 @@ public class Node {
         }
     }
 
+    public void removeChild(String name) {
+        Node node = new Node(name, this);
+        removeChild(node);
+    }
+
+    @Override
     public List<Node> getChildren() {
         return new ArrayList<>(children);
     }
@@ -48,6 +61,7 @@ public class Node {
         return children.stream().filter(pred).findAny();
     }
 
+    @Override
     public Optional<Node> findChildByName(String name) {
         return findChild(byName(name));
     }
@@ -56,6 +70,7 @@ public class Node {
         return findChildByName(name).orElseThrow(() -> new IllegalArgumentException());
     }
 
+    @Override
     public Node navigate(List<String> location) {
         Objects.requireNonNull(location);
         Node destination = this;
