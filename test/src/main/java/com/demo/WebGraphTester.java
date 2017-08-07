@@ -1,5 +1,6 @@
 package com.demo;
 
+import lombok.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -31,19 +32,19 @@ public class WebGraphTester extends GraphTester {
 
     @Override
     public List<String> list(String graphName, List<String> location) {
-        ResponseEntity<List<String>> response = doPostForList("/list/", buildGraphRequest(location, null));
+        ResponseEntity<List<String>> response = doPostForList("/list/", GraphRequest.of(null, location));
         return response.getBody();
     }
 
     @Override
     public void add(String graphName, List<String> location, String childName) {
-        ResponseEntity<String> response = doPostForString("/create/", buildGraphRequest(location, childName));
+        ResponseEntity<String> response = doPostForString("/create/", GraphRequest.of(childName, location));
         checkStatus(response);
     }
 
     @Override
     public void remove(String graphName, List<String> location, String childName) {
-        ResponseEntity<String> response = doPostForString("/delete/", buildGraphRequest(location, childName));
+        ResponseEntity<String> response = doPostForString("/delete/", GraphRequest.of(childName, location));
         checkStatus(response);
     }
 
@@ -53,13 +54,13 @@ public class WebGraphTester extends GraphTester {
         }
     }
 
-    private ResponseEntity<String> doPostForString(String path, GraphRestService.GraphRequest graphRequest) {
-        HttpEntity<GraphRestService.GraphRequest> request = new HttpEntity<>(graphRequest);
+    private ResponseEntity<String> doPostForString(String path, GraphRequest graphRequest) {
+        HttpEntity<GraphRequest> request = new HttpEntity<>(graphRequest);
         return client.exchange(baseUrl + path + graphName, HttpMethod.POST, request, String.class);
     }
 
-    private ResponseEntity<List<String>> doPostForList(String path, GraphRestService.GraphRequest graphRequest) {
-        HttpEntity<GraphRestService.GraphRequest> request = new HttpEntity<>(graphRequest);
+    private ResponseEntity<List<String>> doPostForList(String path, GraphRequest graphRequest) {
+        HttpEntity<GraphRequest> request = new HttpEntity<>(graphRequest);
         ParameterizedTypeReference<List<String>> listTypeReference = new ParameterizedTypeReference<List<String>>() {
             @Override
             public Type getType() {
@@ -69,10 +70,9 @@ public class WebGraphTester extends GraphTester {
         return client.exchange(baseUrl + path + graphName, HttpMethod.POST, request, listTypeReference);
     }
 
-    private GraphRestService.GraphRequest buildGraphRequest(List<String> location, String childName) {
-        GraphRestService.GraphRequest graphRequest = new GraphRestService.GraphRequest();
-        graphRequest.setChildName(childName);
-        graphRequest.setLocation(location);
-        return graphRequest;
+    @Value(staticConstructor = "of")
+    public static class GraphRequest {
+        private String childName;
+        private List<String> location;
     }
 }
