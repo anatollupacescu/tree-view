@@ -27,31 +27,31 @@ public class GraphController implements Api.GraphController {
 
     @Override
     public Set<String> getNames() {
-        return persistence.listNames();
+        return persistence.getNames();
     }
 
     @Override
     public List<String> list(String graphName, List<String> location) {
-        List<GraphChange> changesByName = persistence.getChangesByName(graphName);
-        Graph graph = builder.buildGraph(changesByName);
-        return viewer.listNodeTitlesAtLocation(graph, location);
+        List<GraphChange> changesByName = persistence.getByName(graphName);
+        Graph graph = builder.build(changesByName);
+        return viewer.list(graph, location);
     }
 
     @Override
     public void add(String graphName, List<String> location, String changeData) {
         GraphChange change = graphChangeService.add(location, changeData);
-        List<GraphChange> changesByName = persistence.getChangesByName(graphName);
+        List<GraphChange> changesByName = persistence.getByName(graphName);
         validateChange(changesByName, change);
-        persistence.storeChange(graphName, change);
+        persistence.store(graphName, change);
     }
 
     @Override
     public void remove(String graphName, List<String> location, String changeData) {
         GraphChange change = graphChangeService.remove(location, changeData);
-        List<GraphChange> changesByName = persistence.getChangesByName(graphName);
+        List<GraphChange> changesByName = persistence.getByName(graphName);
         checkGraphIsPresent(changesByName);
         validateChange(changesByName, change);
-        persistence.storeChange(graphName, change);
+        persistence.store(graphName, change);
     }
 
     private void checkGraphIsPresent(List<GraphChange> changesByName) {
@@ -61,6 +61,6 @@ public class GraphController implements Api.GraphController {
     private void validateChange(List<GraphChange> graphChanges, GraphChange change) {
         List<GraphChange> changes = new ArrayList<>(graphChanges);
         changes.add(change);
-        builder.buildGraph(changes);
+        builder.build(changes);
     }
 }

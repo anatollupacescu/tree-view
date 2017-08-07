@@ -10,17 +10,17 @@ public class ChangePersistence implements Api.Persistence<GraphChange> {
     private Map<String, List<GraphChange>> changes = new HashMap<>();
 
     @Override
-    public List<GraphChange> getChangesByName(String name) {
+    public List<GraphChange> getByName(String name) {
         return Optional.ofNullable(changes.get(name)).orElse(Collections.emptyList());
     }
 
     @Override
-    public Set<String> listNames() {
+    public Set<String> getNames() {
         return new HashSet<>(changes.keySet());
     }
 
     @Override
-    public void storeChange(String graph, GraphChange change) {
+    public void store(String graph, GraphChange change) {
         List<GraphChange> graphChanges = changes.get(graph);
         if(graphChanges == null) {
             graphChanges = new ArrayList<>();

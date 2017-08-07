@@ -59,7 +59,7 @@ public class GraphBuilder implements Api.GraphBuilder {
     }
 
     @Override
-    public Graph buildGraph(List<GraphChange> changes) {
+    public Graph build(List<GraphChange> changes) {
         return build("test", changes);
     }
 }

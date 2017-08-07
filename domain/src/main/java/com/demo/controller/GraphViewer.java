@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class GraphViewer implements Api.GraphViewer {
 
     @Override
-    public List<String> listNodeTitlesAtLocation(Graph graph, List<String> location) {
+    public List<String> list(Graph graph, List<String> location) {
         List<Node> childrenAtLocation = graph.navigate(location).getChildren();
         return childrenAtLocation.stream().map(Node::getName).collect(Collectors.toList());
     }

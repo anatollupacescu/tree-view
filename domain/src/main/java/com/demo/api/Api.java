@@ -9,17 +9,17 @@ import java.util.Set;
 public class Api {
 
     public interface Persistence<T> {
-        List<T> getChangesByName(String name);
-        Set<String> listNames();
-        void storeChange(String graph, T change);
+        List<T> getByName(String name);
+        Set<String> getNames();
+        void store(String graph, T change);
     }
 
     public interface GraphBuilder {
-        Graph buildGraph(List<GraphChange> changes);
+        Graph build(List<GraphChange> changes);
     }
 
     public interface GraphViewer {
-       List<String> listNodeTitlesAtLocation(Graph graph, List<String> location);
+       List<String> list(Graph graph, List<String> location);
     }
 
     public interface GraphChangeService {
