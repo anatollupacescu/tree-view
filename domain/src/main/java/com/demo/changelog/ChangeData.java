@@ -1,6 +1,11 @@
 package com.demo.changelog;
 
-import java.util.HashMap;
+import lombok.Value;
 
-public class ChangeData extends HashMap<ChangeDataParam, Object> {
+import java.util.List;
+
+@Value(staticConstructor = "of")
+public class ChangeData {
+    private String name;
+    private List<String> location;
 }

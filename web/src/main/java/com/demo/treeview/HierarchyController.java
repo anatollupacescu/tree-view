@@ -1,6 +1,6 @@
 package com.demo.treeview;
 
-import com.demo.controller.GraphController;
+import com.demo.api.Api;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +18,13 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/graph")
 public class HierarchyController {
 
-    @Autowired private GraphController graphService;
+    @Autowired
+    private Api.GraphController graphController;
 
     @GetMapping
     @ResponseBody
     public Set<String> getNames() {
-        return graphService.getNames();
+        return graphController.getNames();
     }
 
     @GetMapping(value = "/render/{name}", produces = "application/json")
@@ -33,7 +34,7 @@ public class HierarchyController {
     }
 
     private List<Content> toContentList(String name, List<String> location) {
-        List<String> titles = graphService.list(name, location);
+        List<String> titles = graphController.list(name, location);
         final Function<String, Content> nodeToContent = node -> toContentObject(name, location, node);
         return titles.stream().map(nodeToContent).collect(Collectors.toList());
     }
@@ -47,41 +48,41 @@ public class HierarchyController {
 
     @PostMapping(value = "/create/{graphName}", consumes = "application/json")
     public ResponseEntity<String> add(@Valid @RequestBody GraphRequest req,
-                                       @PathVariable String graphName) {
-    	Objects.nonNull(graphName);
-    	Objects.nonNull(req);
-    	Objects.nonNull(req.childName);
-    	Objects.nonNull(req.location);
+                                      @PathVariable String graphName) {
+        Objects.nonNull(graphName);
+        Objects.nonNull(req);
+        Objects.nonNull(req.childName);
+        Objects.nonNull(req.location);
         List<String> location = Arrays.asList(req.location);
         String title = req.childName;
-        graphService.add(graphName, location, title);
+        graphController.add(graphName, location, title);
         return new ResponseEntity<>("great success", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/list/{graphName}", produces = "application/json")
     @ResponseBody
     public List<String> list(@Valid @RequestBody GraphRequest req,
-                                              @PathVariable String graphName) {
+                             @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
-        return graphService.list(graphName, location);
+        return graphController.list(graphName, location);
     }
 
     @PostMapping(value = "/delete/{graphName}")
     public ResponseEntity<String> remove(@Valid @RequestBody GraphRequest req,
-                                                        @PathVariable String graphName) {
+                                         @PathVariable String graphName) {
         List<String> location = Arrays.asList(req.location);
         String nodeName = req.childName;
-        graphService.remove(graphName, location, nodeName);
+        graphController.remove(graphName, location, nodeName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
         String message = ex.getMessage();
-        if(message == null || message.isEmpty()) {
-        	message = ex.getClass().getName();
+        if (message == null || message.isEmpty()) {
+            message = ex.getClass().getName();
         }
-		return ResponseEntity.badRequest().body(message);
+        return ResponseEntity.badRequest().body(message);
     }
 
     @Value(staticConstructor = "of")

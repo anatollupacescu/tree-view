@@ -1,8 +1,8 @@
 package com.tree.steps;
 
-import com.tree.domain.GraphUpdate;
 import com.demo.ClassGraphTester;
 import com.demo.GraphTester;
+import com.tree.domain.GraphUpdate;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;

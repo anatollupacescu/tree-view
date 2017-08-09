@@ -1,7 +1,7 @@
 package com.demo.persistence;
 
 import com.demo.changelog.GraphChange;
-import com.demo.controller.ChangeService;
+import com.demo.changelog.GraphChangeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,16 +9,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ChangeServiceTest {
 
-    private ChangeService changeService;
+    private GraphChangeBuilder changeService;
 
     @Before
     public void setUp() {
-        changeService = new ChangeService();
+        changeService = new GraphChangeBuilder();
     }
 
     @Test

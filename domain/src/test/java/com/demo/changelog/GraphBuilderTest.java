@@ -19,8 +19,7 @@ public class GraphBuilderTest {
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void canNotRemoveNonExistentChild() {
-        ChangeData data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "lolo");
+        ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange = new GraphChange(ChangeType.REMOVE_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange);
         builder.build(GRAPH_NAME, changes);
@@ -28,8 +27,7 @@ public class GraphBuilderTest {
 
     @Test
     public void canAddChild() {
-        ChangeData data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "lolo");
+        ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange);
         Graph graph = builder.build(GRAPH_NAME, changes);
@@ -39,12 +37,9 @@ public class GraphBuilderTest {
 
     @Test
     public void canAddChildToLocation() {
-        ChangeData data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "lolo");
+        ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange1 = new GraphChange(ChangeType.ADD_CHILD, data);
-        data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "sub");
-        data.put(ChangeDataParam.PARENT, Collections.singletonList("lolo"));
+        data = ChangeData.of("sub",Collections.singletonList("lolo"));
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange1, graphChange2);
         Graph graph = builder.build(GRAPH_NAME, changes);
@@ -56,9 +51,7 @@ public class GraphBuilderTest {
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void canNotAddChildToBadLocation() {
-        ChangeData data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "sub");
-        data.put(ChangeDataParam.PARENT, Collections.singletonList("lolo"));
+        ChangeData data = ChangeData.of("sub", Collections.singletonList("lolo"));
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange2);
         builder.build(GRAPH_NAME, changes);
@@ -66,11 +59,8 @@ public class GraphBuilderTest {
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void canNotAddExistentChild() {
-        ChangeData data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "lolo");
+        ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange1 = new GraphChange(ChangeType.ADD_CHILD, data);
-        data = new ChangeData();
-        data.put(ChangeDataParam.NAME, "lolo");
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange1, graphChange2);
         builder.build(GRAPH_NAME, changes);

@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.api.Api;
+import com.demo.changelog.GraphChangeBuilder;
 import com.demo.changelog.GraphBuilder;
 import com.demo.graph.Node;
 import com.demo.persistence.ChangePersistence;
@@ -20,7 +21,7 @@ public class GraphControllerTest {
 
     public GraphController createDefault() {
         ChangePersistence persistence = new ChangePersistence();
-        ChangeService changeService = new ChangeService();
+        GraphChangeBuilder changeService = new GraphChangeBuilder();
         GraphBuilder graphBuilder = new GraphBuilder();
         Api.GraphViewer viewer = new GraphViewer();
         return new GraphController(persistence, changeService, graphBuilder, viewer);

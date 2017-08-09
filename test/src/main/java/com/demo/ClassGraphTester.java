@@ -1,5 +1,6 @@
 package com.demo;
 
+import com.demo.api.GraphNode;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
 
@@ -10,15 +11,17 @@ import java.util.stream.Collectors;
 
 public class ClassGraphTester extends GraphTester {
 
-    private final Graph graph;
+    private final GraphNode<Node> graph;
+    private final Set<String> names;
 
-    public ClassGraphTester(String graph) {
-        this.graph = Graph.withName(graph);
+    public ClassGraphTester(String name) {
+        this.names = Collections.singleton(name);
+        this.graph = Graph.withName(name);
     }
 
     @Override
     public Set<String> getNames() {
-        return Collections.singleton(graph.getName());
+        return names;
     }
 
     @Override
@@ -28,9 +31,9 @@ public class ClassGraphTester extends GraphTester {
     }
 
     @Override
-    public void add(String graphName, List<String> location, String name) {
+    public void add(String graphName, List<String> location, String nodeName) {
         Node parent = graph.navigate(location);
-        parent.addChild(name);
+        parent.addChild(nodeName);
     }
 
     @Override

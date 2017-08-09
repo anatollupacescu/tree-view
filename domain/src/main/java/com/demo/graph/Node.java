@@ -1,12 +1,14 @@
 package com.demo.graph;
 
+import com.demo.api.GraphNode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class Node implements GraphNode {
+public class Node implements GraphNode<Node> {
 
     private final String name;
     private final Node parent;

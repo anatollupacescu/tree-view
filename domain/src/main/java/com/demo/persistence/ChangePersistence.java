@@ -22,7 +22,7 @@ public class ChangePersistence implements Api.Persistence<GraphChange> {
     @Override
     public void store(String graph, GraphChange change) {
         List<GraphChange> graphChanges = changes.get(graph);
-        if(graphChanges == null) {
+        if (graphChanges == null) {
             graphChanges = new ArrayList<>();
             changes.put(graph, graphChanges);
         }

@@ -37,14 +37,14 @@ public class WebGraphTester extends GraphTester {
     }
 
     @Override
-    public void add(String graphName, List<String> location, String childName) {
-        ResponseEntity<String> response = doPostForString("/create/", GraphRequest.of(childName, location));
+    public void add(String graphName, List<String> location, String nodeName) {
+        ResponseEntity<String> response = doPostForString("/create/", GraphRequest.of(nodeName, location));
         checkStatus(response);
     }
 
     @Override
-    public void remove(String graphName, List<String> location, String childName) {
-        ResponseEntity<String> response = doPostForString("/delete/", GraphRequest.of(childName, location));
+    public void remove(String graphName, List<String> location, String nodeName) {
+        ResponseEntity<String> response = doPostForString("/delete/", GraphRequest.of(nodeName, location));
         checkStatus(response);
     }
 

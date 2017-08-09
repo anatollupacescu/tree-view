@@ -1,8 +1,8 @@
 package com.demo.controller;
 
 import com.demo.api.Api;
+import com.demo.api.GraphNode;
 import com.demo.changelog.GraphChange;
-import com.demo.graph.Graph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +11,16 @@ import java.util.Set;
 public class GraphController implements Api.GraphController {
 
     private final Api.Persistence<GraphChange> persistence;
-    private final Api.GraphChangeService graphChangeService;
+    private final Api.GraphChangeBuilder<GraphChange> graphChangeBuilder;
     private final Api.GraphBuilder builder;
     private final Api.GraphViewer viewer;
 
     public GraphController(Api.Persistence<GraphChange> persistence,
-                           Api.GraphChangeService graphChangeService,
+                           Api.GraphChangeBuilder graphChangeBuilder,
                            Api.GraphBuilder builder,
                            Api.GraphViewer viewer) {
         this.persistence = persistence;
-        this.graphChangeService = graphChangeService;
+        this.graphChangeBuilder = graphChangeBuilder;
         this.builder = builder;
         this.viewer = viewer;
     }
@@ -33,21 +33,21 @@ public class GraphController implements Api.GraphController {
     @Override
     public List<String> list(String graphName, List<String> location) {
         List<GraphChange> changesByName = persistence.getByName(graphName);
-        Graph graph = builder.build(changesByName);
+        GraphNode graph = builder.build(changesByName);
         return viewer.list(graph, location);
     }
 
     @Override
-    public void add(String graphName, List<String> location, String changeData) {
-        GraphChange change = graphChangeService.add(location, changeData);
+    public void add(String graphName, List<String> location, String nodeName) {
+        GraphChange change = graphChangeBuilder.add(location, nodeName);
         List<GraphChange> changesByName = persistence.getByName(graphName);
         validateChange(changesByName, change);
         persistence.store(graphName, change);
     }
 
     @Override
-    public void remove(String graphName, List<String> location, String changeData) {
-        GraphChange change = graphChangeService.remove(location, changeData);
+    public void remove(String graphName, List<String> location, String nodeName) {
+        GraphChange change = graphChangeBuilder.remove(location, nodeName);
         List<GraphChange> changesByName = persistence.getByName(graphName);
         checkGraphIsPresent(changesByName);
         validateChange(changesByName, change);
@@ -55,7 +55,7 @@ public class GraphController implements Api.GraphController {
     }
 
     private void checkGraphIsPresent(List<GraphChange> changesByName) {
-        if(changesByName.isEmpty()) throw new Api.GraphNotFoundException();
+        if (changesByName.isEmpty()) throw new Api.GraphNotFoundException();
     }
 
     private void validateChange(List<GraphChange> graphChanges, GraphChange change) {

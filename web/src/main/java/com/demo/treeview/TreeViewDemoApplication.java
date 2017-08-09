@@ -2,7 +2,7 @@ package com.demo.treeview;
 
 import com.demo.api.Api;
 import com.demo.changelog.GraphBuilder;
-import com.demo.controller.ChangeService;
+import com.demo.changelog.GraphChangeBuilder;
 import com.demo.controller.GraphController;
 import com.demo.controller.GraphViewer;
 import com.demo.persistence.ChangePersistence;
@@ -20,7 +20,7 @@ public class TreeViewDemoApplication {
     @Bean
     public GraphController graphController() {
         ChangePersistence persistence = new ChangePersistence();
-        ChangeService changeService = new ChangeService();
+        GraphChangeBuilder changeService = new GraphChangeBuilder();
         GraphBuilder graphBuilder = new GraphBuilder();
         Api.GraphViewer viewer = new GraphViewer();
         return new GraphController(persistence, changeService, graphBuilder, viewer);
