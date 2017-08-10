@@ -4,7 +4,7 @@
     <groupId>com.demo</groupId>
     <version>0.0.1-SNAPSHOT</version>
     <artifactId>domain</artifactId>
-    <name>domain</name>
+    <name>in-memory</name>
 
     <parent>
         <groupId>com.demo</groupId>

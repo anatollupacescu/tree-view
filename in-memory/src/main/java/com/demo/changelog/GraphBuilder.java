@@ -1,7 +1,6 @@
 package com.demo.changelog;
 
 import com.demo.api.Api;
-import com.demo.api.GraphNode;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
 

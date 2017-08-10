@@ -21,10 +21,11 @@
     </properties>
 
     <modules>
-        <module>domain</module>
+        <module>in-memory</module>
         <module>web</module>
         <module>test</module>
         <module>api</module>
+        <module>oak</module>
     </modules>
 
     <dependencyManagement>
