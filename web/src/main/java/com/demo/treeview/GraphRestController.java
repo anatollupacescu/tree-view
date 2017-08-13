@@ -44,7 +44,7 @@ public class GraphRestController {
     }
 
     private List<Content> toContentList(Api.GraphController graphController, String name, List<String> location) {
-        List<String> titles = graphController.list(name, location);
+        Set<String> titles = graphController.list(name, location);
         final Function<String, Content> nodeToContent = node -> toContentObject(graphController, name, location, node);
         return titles.stream().map(nodeToContent).collect(Collectors.toList());
     }
@@ -104,7 +104,7 @@ public class GraphRestController {
 
     @PostMapping(value = "/list/{graphName}", produces = "application/json")
     @ResponseBody
-    public List<String> list(@Valid @RequestBody String[] location,
+    public Collection<String> list(@Valid @RequestBody String[] location,
                              @PathVariable String graphName) throws Exception {
         Objects.requireNonNull(graphName);
         List<String> locationList = toList(location);
