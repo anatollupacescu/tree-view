@@ -16,8 +16,7 @@ public class OakGraphController implements Api.GraphController, AutoCloseable {
     private final Api.NodeManager nodeManager;
     private final Session session;
 
-    public OakGraphController(SimpleCredentials admin) {
-        NodeStore ns = new MemoryNodeStore();
+    public OakGraphController(NodeStore ns, SimpleCredentials admin) {
         Repository repo = new Jcr(ns).createRepository();
         try {
             this.session = repo.login(admin);

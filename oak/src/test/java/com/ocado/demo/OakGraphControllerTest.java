@@ -1,6 +1,7 @@
 package com.ocado.demo;
 
 import com.ocado.demo.oak.OakGraphController;
+import org.apache.jackrabbit.oak.plugins.memory.MemoryNodeStore;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class OakGraphControllerTest {
     @Before
     public void setUp() {
         SimpleCredentials admin = new SimpleCredentials("admin", "admin".toCharArray());
-        manager = new OakGraphController(admin);
+        manager = new OakGraphController(new MemoryNodeStore(), admin);
     }
 
     @Test
