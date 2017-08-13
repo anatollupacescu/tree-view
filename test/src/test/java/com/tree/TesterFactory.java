@@ -6,7 +6,7 @@ import com.demo.WebGraphTester;
 
 public class TesterFactory {
 
-    public static GraphTester getTester() {
+    public static GraphTester getTester(){
         return new ClassGraphTester();
     }
 }

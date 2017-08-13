@@ -1,5 +1,6 @@
 package com.demo;
 
+import com.demo.api.UserPass;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
 
@@ -44,5 +45,20 @@ public class ClassGraphTester extends GraphTester {
         Graph graph = graphs.get(graphName);
         Node parent = graph.navigate(location);
         parent.removeChild(nodeName);
+    }
+
+    @Override
+    public void login(UserPass userPass) {
+
+    }
+
+    @Override
+    public void logout() {
+
+    }
+
+    @Override
+    public void close() throws Exception {
+        logout();
     }
 }

@@ -5,7 +5,7 @@ import com.demo.graph.api.Persistence;
 
 import java.util.*;
 
-public class ChangePersistence implements Persistence<GraphChange> {
+public class InMemoryChangePersistence implements Persistence<GraphChange> {
 
     private Map<String, List<GraphChange>> changes = new HashMap<>();
 

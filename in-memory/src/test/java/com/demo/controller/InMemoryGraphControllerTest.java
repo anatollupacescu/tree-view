@@ -6,7 +6,7 @@ import com.demo.changelog.InMemoryGraphChangeBuilder;
 import com.demo.graph.Node;
 import com.demo.graph.api.GraphChangeBuilder;
 import com.demo.graph.api.GraphViewer;
-import com.demo.persistence.ChangePersistence;
+import com.demo.persistence.InMemoryChangePersistence;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -22,7 +22,7 @@ public class InMemoryGraphControllerTest {
     private static final String NODE_NAME2 = "node2";
 
     public InMemoryGraphController createDefault() {
-        ChangePersistence persistence = new ChangePersistence();
+        InMemoryChangePersistence persistence = new InMemoryChangePersistence();
         InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
         GraphViewer viewer = new NodeGraphViewer();
         GraphChangeBuilder changeService = new InMemoryGraphChangeBuilder();

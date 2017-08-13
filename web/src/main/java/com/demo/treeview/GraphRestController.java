@@ -1,6 +1,7 @@
 package com.demo.treeview;
 
 import com.demo.api.Api;
+import com.demo.api.UserPass;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,44 +21,54 @@ import java.util.stream.Collectors;
 public class GraphRestController {
 
     @Autowired
-    private Api.GraphController graphController;
+    private Function<UserPass, Api.GraphController> controllerFactory;
+
+    @Autowired
+    private UserPass defaultUserPass;
 
     @GetMapping
     @ResponseBody
-    public Set<String> getNames() {
-        return graphController.getNames();
+    public Set<String> getNames() throws Exception {
+        try (Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
+            return graphController.getNames();
+        }
     }
 
     @GetMapping(value = "/render/{name}", produces = "application/json")
     @ResponseBody
     public List<Content> renderGraph(@PathVariable @NotNull String name) {
-        return toContentList(name, Collections.emptyList());
+        Api.GraphController graphController = controllerFactory.apply(defaultUserPass);
+        List<Content> contentList = toContentList(graphController, name, Collections.emptyList());
+        graphController.logout();
+        return contentList;
     }
 
-    private List<Content> toContentList(String name, List<String> location) {
+    private List<Content> toContentList(Api.GraphController graphController, String name, List<String> location) {
         List<String> titles = graphController.list(name, location);
-        final Function<String, Content> nodeToContent = node -> toContentObject(name, location, node);
+        final Function<String, Content> nodeToContent = node -> toContentObject(graphController, name, location, node);
         return titles.stream().map(nodeToContent).collect(Collectors.toList());
     }
 
-    private Content toContentObject(String name, List<String> location, String node) {
+    private Content toContentObject(Api.GraphController graphController, String name, List<String> location, String node) {
         List<String> subLocation = new ArrayList<>(location);
         subLocation.add(node);
-        List<Content> nodes = toContentList(name, subLocation);
+        List<Content> nodes = toContentList(graphController, name, subLocation);
         return Content.of(node, null, null, nodes);
     }
 
     @DeleteMapping(value = "/delete/{graphName}")
-    public ResponseEntity<String> remove(@PathVariable String graphName) {
+    public ResponseEntity<String> remove(@PathVariable String graphName) throws Exception {
         Objects.requireNonNull(graphName);
-        graphController.remove(graphName);
+        try(Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
+            graphController.remove(graphName);
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/create/{graphName}")
-    public ResponseEntity<String> create(@PathVariable String graphName) {
+    public ResponseEntity<String> create(@PathVariable String graphName) throws Exception {
         Objects.requireNonNull(graphName);
-        if(!StringUtils.isEmpty(graphName)) {
+        if (!StringUtils.isEmpty(graphName)) {
             createGraph(graphName);
             return created();
         }
@@ -67,7 +78,7 @@ public class GraphRestController {
     @PostMapping(value = "/create/{graphName}/{nodeName}", consumes = "application/json")
     public ResponseEntity<String> add(@Valid @RequestBody String[] location,
                                       @PathVariable String graphName,
-                                      @PathVariable String nodeName) {
+                                      @PathVariable String nodeName) throws Exception {
         Objects.requireNonNull(graphName);
         Objects.requireNonNull(location);
         Objects.requireNonNull(nodeName);
@@ -75,12 +86,16 @@ public class GraphRestController {
         return created();
     }
 
-    private void createNode(String graphName, String[] location, String nodeName) {
-        graphController.add(graphName, Arrays.asList(location), nodeName);
+    private void createNode(String graphName, String[] location, String nodeName) throws Exception {
+        try(Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
+            graphController.add(graphName, Arrays.asList(location), nodeName);
+        }
     }
 
-    private void createGraph(String graphName) {
-        graphController.create(graphName);
+    private void createGraph(String graphName) throws Exception {
+        try (Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
+            graphController.create(graphName);
+        }
     }
 
     private ResponseEntity<String> created() {
@@ -90,26 +105,31 @@ public class GraphRestController {
     @PostMapping(value = "/list/{graphName}", produces = "application/json")
     @ResponseBody
     public List<String> list(@Valid @RequestBody String[] location,
-                             @PathVariable String graphName) {
+                             @PathVariable String graphName) throws Exception {
         Objects.requireNonNull(graphName);
         List<String> locationList = toList(location);
-        return graphController.list(graphName, locationList);
+        try(Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
+            return graphController.list(graphName, locationList);
+        }
     }
 
     private List<String> toList(String[] location) {
-        if(location == null)
+        if (location == null)
             return Collections.emptyList();
         else
             return Arrays.asList(location);
     }
 
     @PostMapping(value = "/delete/{graphName}/{nodeName}")
-    public ResponseEntity<String> remove(@Valid @RequestBody String [] location,
-                                         @PathVariable String graphName, @PathVariable String nodeName) {
+    public ResponseEntity<String> remove(@Valid @RequestBody String[] location,
+                                         @PathVariable String graphName,
+                                         @PathVariable String nodeName) throws Exception {
         Objects.requireNonNull(graphName);
         List<String> locationList = toList(location);
-        graphController.remove(graphName, locationList, nodeName);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try(Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
+            graphController.remove(graphName, locationList, nodeName);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @ExceptionHandler(Exception.class)

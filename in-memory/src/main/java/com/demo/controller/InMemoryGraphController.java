@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.api.Api;
+import com.demo.api.UserPass;
 import com.demo.graph.api.GraphNode;
 import com.demo.changelog.GraphChange;
 import com.demo.graph.Node;
@@ -81,5 +82,20 @@ public class InMemoryGraphController implements Api.GraphController {
         List<GraphChange> changes = new ArrayList<>(graphChanges);
         changes.add(change);
         builder.build(changes);
+    }
+
+    @Override
+    public void login(UserPass userPass) {
+
+    }
+
+    @Override
+    public void logout() {
+
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }

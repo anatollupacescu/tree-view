@@ -1,47 +1,40 @@
 package com.ocado.demo.oak;
 
 import com.demo.api.Api;
-import org.apache.jackrabbit.oak.jcr.Jcr;
-import org.apache.jackrabbit.oak.plugins.memory.MemoryNodeStore;
-import org.apache.jackrabbit.oak.spi.state.NodeStore;
+import com.demo.api.UserPass;
 
 import javax.jcr.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class OakGraphController implements Api.GraphController, AutoCloseable {
+public class OakGraphController implements Api.GraphController {
 
-    private final Api.GraphManager manager;
-    private final Api.NodeManager nodeManager;
-    private final Session session;
+    private final Repository repository;
 
-    public OakGraphController(NodeStore ns, SimpleCredentials admin) {
-        Repository repo = new Jcr(ns).createRepository();
-        try {
-            this.session = repo.login(admin);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-        manager = new OakGraphManager(session);
-        nodeManager = new OakNodeManager(session);
+    private Api.GraphManager graphManager;
+    private Api.NodeManager nodeManager;
+    private Session session;
+
+    public OakGraphController(Repository repository) {
+        this.repository = repository;
     }
 
     @Override
     public Set<String> getNames() {
-        return manager.getNames();
+        return graphManager.getNames();
     }
 
     @Override
     public void remove(String graphName) {
         Objects.requireNonNull(graphName);
-        manager.remove(graphName);
+        graphManager.remove(graphName);
     }
 
     @Override
     public void create(String graphName) {
         Objects.requireNonNull(graphName);
-        manager.create(graphName);
+        graphManager.create(graphName);
     }
 
     @Override
@@ -62,7 +55,29 @@ public class OakGraphController implements Api.GraphController, AutoCloseable {
     }
 
     @Override
-    public void close() {
+        public void login(UserPass userPass) {
+        try {
+            SimpleCredentials credentials = new SimpleCredentials(userPass.getUsername(), userPass.getPassword().toCharArray());
+            this.session = repository.login(credentials);
+            this.graphManager = new OakGraphManager(session);
+            this.nodeManager = new OakNodeManager(session);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void logout() {
+        try {
+            session.save();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
         session.logout();
+    }
+
+    @Override
+    public void close() {
+        logout();
     }
 }

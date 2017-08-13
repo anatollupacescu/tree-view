@@ -1,5 +1,6 @@
 package com.demo;
 
+import com.demo.api.UserPass;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -68,5 +69,20 @@ public class WebGraphTester extends GraphTester {
         if (response.getStatusCodeValue() > 300) {
             throw new IllegalStateException("Could not delete");
         }
+    }
+
+    @Override
+    public void login(UserPass userPass) {
+
+    }
+
+    @Override
+    public void logout() {
+
+    }
+
+    @Override
+    public void close() throws Exception {
+        logout();
     }
 }

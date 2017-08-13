@@ -1,12 +1,16 @@
 package com.ocado.demo;
 
+import com.demo.api.UserPass;
 import com.ocado.demo.oak.OakGraphController;
+import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.memory.MemoryNodeStore;
+import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.SimpleCredentials;
 import java.util.Collections;
@@ -23,8 +27,10 @@ public class OakGraphControllerTest {
 
     @Before
     public void setUp() {
-        SimpleCredentials admin = new SimpleCredentials("admin", "admin".toCharArray());
-        manager = new OakGraphController(new MemoryNodeStore(), admin);
+        NodeStore ns = new MemoryNodeStore();
+        Repository repository = new Jcr(ns).createRepository();
+        manager = new OakGraphController(repository);
+        manager.login(new UserPass("admin", "admin"));
     }
 
     @Test
