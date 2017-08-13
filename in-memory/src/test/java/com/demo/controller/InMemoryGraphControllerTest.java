@@ -9,8 +9,10 @@ import com.demo.graph.api.GraphViewer;
 import com.demo.persistence.InMemoryChangePersistence;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -50,7 +52,7 @@ public class InMemoryGraphControllerTest {
     @Test
     public void canNotListRootNodesOfNonExistentGraph() {
         InMemoryGraphController service = createDefault();
-        List<String> list = service.list("noGo", Collections.emptyList());
+        Set<String> list = service.list("noGo", Collections.emptyList());
         assertThat(list.isEmpty(), is(equalTo(true)));
     }
 
@@ -58,7 +60,7 @@ public class InMemoryGraphControllerTest {
     public void listNodesAtLocation() {
         InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
-        List<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
+        Set<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
         assertThat(nodes, is(notNullValue()));
         assertThat(nodes.size(), is(equalTo(1)));
     }
@@ -68,7 +70,7 @@ public class InMemoryGraphControllerTest {
         InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         service.add(GRAPH_NAME, Collections.singletonList(NODE_NAME1), NODE_NAME2);
-        List<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
+        Set<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
         assertThat(nodes, is(notNullValue()));
         assertThat(nodes.size(), is(equalTo(1)));
         nodes = service.list(GRAPH_NAME, Collections.singletonList(NODE_NAME1));
@@ -85,10 +87,10 @@ public class InMemoryGraphControllerTest {
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void removeNodeAtBadLocationFails() {
-        List<String> location = Collections.singletonList(NODE_NAME1);
+        Set<String> location = Collections.singleton(NODE_NAME1);
         InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
-        service.remove(GRAPH_NAME, location, NODE_NAME2);
+        service.remove(GRAPH_NAME, new ArrayList<>(location), NODE_NAME2);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class InMemoryGraphControllerTest {
         List<String> location = Collections.singletonList(NODE_NAME1);
         service.add(GRAPH_NAME, location, NODE_NAME2);
         service.remove(GRAPH_NAME, location, NODE_NAME2);
-        List<String> nodes = service.list(GRAPH_NAME, location);
+        Set<String> nodes = service.list(GRAPH_NAME, location);
         assertThat(nodes.size(), is(equalTo(0)));
         nodes = service.list(GRAPH_NAME, Collections.emptyList());
         assertThat(nodes.size(), is(equalTo(1)));

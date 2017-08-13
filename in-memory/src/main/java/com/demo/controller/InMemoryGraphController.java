@@ -51,7 +51,7 @@ public class InMemoryGraphController implements Api.GraphController {
     }
 
     @Override
-    public List<String> list(String graphName, List<String> location) {
+    public Set<String> list(String graphName, List<String> location) {
         List<GraphChange> changesByName = persistence.getByName(graphName);
         GraphNode<Node> graph = builder.build(changesByName);
         return viewer.list(graph, location);
