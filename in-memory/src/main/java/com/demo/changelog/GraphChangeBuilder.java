@@ -2,6 +2,7 @@ package com.demo.changelog;
 
 import com.demo.api.Api;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +20,13 @@ public class GraphChangeBuilder implements Api.GraphChangeBuilder<GraphChange> {
         Objects.requireNonNull(name);
         ChangeData data = ChangeData.of(name, location);
         return new GraphChange(ChangeType.REMOVE_CHILD, data);
+    }
+
+    @Override
+    public GraphChange init(String graphName) {
+        Objects.requireNonNull(graphName);
+        ChangeData data = ChangeData.of(graphName, Collections.emptyList());
+        return new GraphChange(ChangeType.CREATE_ROOT, data);
     }
 
     @Override

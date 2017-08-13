@@ -1,14 +1,12 @@
 package com.demo.treeview;
 
 import com.demo.api.Api;
-import com.demo.changelog.GraphBuilder;
-import com.demo.changelog.GraphChangeBuilder;
-import com.demo.controller.GraphController;
-import com.demo.controller.GraphViewer;
-import com.demo.persistence.ChangePersistence;
+import com.ocado.demo.api.GraphController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import javax.jcr.SimpleCredentials;
 
 @SpringBootApplication
 public class TreeViewDemoApplication {
@@ -18,11 +16,12 @@ public class TreeViewDemoApplication {
     }
 
     @Bean
-    public GraphController graphController() {
-        ChangePersistence persistence = new ChangePersistence();
-        GraphChangeBuilder changeService = new GraphChangeBuilder();
-        GraphBuilder graphBuilder = new GraphBuilder();
-        Api.GraphViewer viewer = new GraphViewer();
-        return new GraphController(persistence, changeService, graphBuilder, viewer);
+    public SimpleCredentials admin() {
+        return new SimpleCredentials("admin", "admin".toCharArray());
+    }
+
+    @Bean
+    public Api.GraphController graphController(SimpleCredentials admin) {
+        return new GraphController(admin);
     }
 }

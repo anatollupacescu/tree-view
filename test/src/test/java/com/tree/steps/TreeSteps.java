@@ -1,62 +1,48 @@
 package com.tree.steps;
 
-import com.demo.ClassGraphTester;
 import com.demo.GraphTester;
-import com.tree.domain.GraphUpdate;
-import cucumber.api.java.en.And;
+import com.tree.TesterFactory;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class TreeSteps {
 
-    private String graphName;
-    private GraphTester graphTester;
+    private GraphTester graphTester = TesterFactory.getTester();
 
-    @Given("^I have a tree called (.*)$")
-    public void i_have_a_tree(String graphName) throws Throwable {
-        this.graphName = graphName;
-        graphTester = new ClassGraphTester(graphName);
-        assertThat(graphTester, is(notNullValue()));
-        assertThat(graphTester.getNames(), is(notNullValue()));
-        assertThat(graphTester.getNames().iterator().next(), is(equalTo(graphName)));
-    }
-
-    @When("^I add the following nodes$")
-    public void i_add_following_nodes(List<GraphUpdate> list) throws Throwable {
-        for (GraphUpdate graphUpdate : list) {
-            List<String> location = graphTester.toList(graphUpdate.location);
-            graphTester.add(graphName, location, graphUpdate.name);
+    @Given("^no trees have been created$")
+    public void no_trees_have_been_created() throws Throwable {
+        Set<String> treeNames = graphTester.getNames();
+        for (String tree : treeNames) {
+            graphTester.remove(tree);
         }
     }
 
-    @Then("^the root has (\\d+) (?:nodes?|node)$")
-    public void root_has_nodes(int nodeCount) throws Throwable {
-        assertThat(graphTester.getChildrenCount(), is(equalTo(nodeCount)));
+    @When("^I create a tree called (.*)$")
+    public void i_create_a_tree_called_products(String graphName) throws Throwable {
+        graphTester.create(graphName);
     }
 
-    @And("^the node at (.*) contains (.*)$")
-    public void parent_contains_child(String parentLocation, String childName) {
-        List<String> location = graphTester.toList(parentLocation);
-        List<String> children = graphTester.list(graphName, location);
-        assertThat(children.contains(childName), is(equalTo(true)));
+    @When("^I remove the tree instance called (.*)$")
+    public void i_remove_the_tree_instance_called_alpha(String name) throws Throwable {
+        graphTester.remove(name);
     }
 
-    @And("^the node at (.*) has no children$")
-    public void node_has_no_children(String parentLocation) {
-        List<String> location = graphTester.toList(parentLocation);
-        List<String> children = graphTester.list(graphName, location);
-        assertThat(children.isEmpty(), is(equalTo(true)));
+    @Given("^a tree instance called (.*) is present$")
+    public void a_tree_instance_called_products_is_present(String name) throws Throwable {
+        Set<String> treeNames = graphTester.getNames();
+        assertThat(treeNames.contains(name), is(equalTo(true)));
     }
 
-    @And("^I remove node (.*) at location in root")
-    public void i_remove_node_in_root(String nodeName) {
-        graphTester.remove(graphName, Collections.emptyList(), nodeName);
+    @Then("^the tree names array should have (\\d) (?:elements?|element)$")
+    public void a_tree_names_reponse_should_have_size(int size) throws Throwable {
+        Set<String> treeNames = graphTester.getNames();
+        assertThat(treeNames.size(), is(equalTo(size)));
     }
 }

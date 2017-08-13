@@ -28,4 +28,9 @@ public class ChangePersistence implements Api.Persistence<GraphChange> {
         }
         graphChanges.add(change);
     }
+
+    @Override
+    public void clear(String graph) {
+       changes.remove(graph);
+    }
 }

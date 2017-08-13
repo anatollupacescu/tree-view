@@ -1,31 +1,13 @@
-Feature: User can manipulate tree contents
+Feature: User can manipulate tree instances
   As a user
-  I want to see the tree changing when I apply updates
-  So that I can change its state
+  I want to add and remove tree instances
 
- Scenario: User can add nodes to the tree
-   Given I have a tree called root1
-   When I add the following nodes
+ Scenario: User can create tree instance
+    Given no trees have been created
+    When I create a tree called products
+    Then the tree names array should have 1 element
 
-     | location        | name       |
-     | /               | node1      |
-     | /               | node2      |
-     | /node1          | subNode1   |
-     | /node1/subNode1 | subSub     |
-
-   Then the root has 2 nodes
-   And the node at /node1 contains subNode1
-   And the node at /node1/subNode1 contains subSub
-   And the node at /node2 has no children
-
- Scenario: User can remove nodes from tree
-   Given I have a tree called root2
-   When I add the following nodes
-
-     | location        | name       |
-     | /               | node1      |
-     | /               | node2      |
-     | /node1          | subNode1   |
-     | /node1/subNode1 | subSub     |
-   And I remove node node1 at location in root
-   Then the root has 1 node
+ Scenario: User can remove tree instance
+    Given a tree instance called products is present
+    When I remove the tree instance called products
+    Then the tree names array should have 0 element

@@ -1,6 +1,5 @@
 package com.demo;
 
-import lombok.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -14,37 +13,51 @@ public class WebGraphTester extends GraphTester {
 
     private final RestTemplate client = new RestTemplate();
     private final String baseUrl = "http://localhost:8080/graph";
-    private final String graphName;
 
-    public WebGraphTester(String graphName) {
-        this.graphName = graphName;
-    }
-
-    @Override
-    public int getChildrenCount() {
-        return list(graphName, Collections.emptyList()).size();
-    }
+    private final ParameterizedTypeReference<List<String>> listTypeReference = new ParameterizedTypeReference<List<String>>() {
+        public Type getType() {
+            return super.getType();
+        }
+    };
 
     @Override
     public Set<String> getNames() {
-        return new HashSet<>(Arrays.asList(graphName));
+        ResponseEntity<List<String>> response = client.exchange(baseUrl, HttpMethod.GET, null, listTypeReference);
+        return new HashSet<>(response.getBody());
+    }
+
+    @Override
+    public void remove(String graphName) {
+        client.exchange(baseUrl + "/delete/" + graphName, HttpMethod.DELETE, null, Void.class);
+    }
+
+    @Override
+    public void create(String graphName) {
+        String url = baseUrl + "/create/" + graphName;
+        client.exchange(url, HttpMethod.PUT, null, String.class);
     }
 
     @Override
     public List<String> list(String graphName, List<String> location) {
-        ResponseEntity<List<String>> response = doPostForList("/list/", GraphRequest.of(null, location));
+        HttpEntity<List<String>> request = new HttpEntity<>(location);
+        String url = baseUrl + "/list/" + graphName;
+        ResponseEntity<List<String>> response =client.exchange(url, HttpMethod.POST, request, listTypeReference);
         return response.getBody();
     }
 
     @Override
     public void add(String graphName, List<String> location, String nodeName) {
-        ResponseEntity<String> response = doPostForString("/create/", GraphRequest.of(nodeName, location));
+        HttpEntity<List<String>> request = new HttpEntity<>(location);
+        String url = String.format("%s/create/%s/%s", baseUrl, graphName, nodeName);
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, request, String.class);
         checkStatus(response);
     }
 
     @Override
     public void remove(String graphName, List<String> location, String nodeName) {
-        ResponseEntity<String> response = doPostForString("/delete/", GraphRequest.of(nodeName, location));
+        HttpEntity<List<String>> request = new HttpEntity<>(location);
+        String url = String.format("%s/delete/%s/%s", baseUrl, graphName, nodeName);
+        ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, request, String.class);
         checkStatus(response);
     }
 
@@ -54,25 +67,4 @@ public class WebGraphTester extends GraphTester {
         }
     }
 
-    private ResponseEntity<String> doPostForString(String path, GraphRequest graphRequest) {
-        HttpEntity<GraphRequest> request = new HttpEntity<>(graphRequest);
-        return client.exchange(baseUrl + path + graphName, HttpMethod.POST, request, String.class);
-    }
-
-    private ResponseEntity<List<String>> doPostForList(String path, GraphRequest graphRequest) {
-        HttpEntity<GraphRequest> request = new HttpEntity<>(graphRequest);
-        ParameterizedTypeReference<List<String>> listTypeReference = new ParameterizedTypeReference<List<String>>() {
-            @Override
-            public Type getType() {
-                return super.getType();
-            }
-        };
-        return client.exchange(baseUrl + path + graphName, HttpMethod.POST, request, listTypeReference);
-    }
-
-    @Value(staticConstructor = "of")
-    public static class GraphRequest {
-        private String childName;
-        private List<String> location;
-    }
 }

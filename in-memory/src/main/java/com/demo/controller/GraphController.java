@@ -6,6 +6,7 @@ import com.demo.changelog.GraphChange;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class GraphController implements Api.GraphController {
@@ -28,6 +29,19 @@ public class GraphController implements Api.GraphController {
     @Override
     public Set<String> getNames() {
         return persistence.getNames();
+    }
+
+    @Override
+    public void remove(String graphName) {
+        Objects.requireNonNull(graphName);
+        persistence.clear(graphName);
+    }
+
+    @Override
+    public void create(String graphName) {
+        Objects.requireNonNull(graphName);
+        GraphChange init = graphChangeBuilder.init(graphName);
+        persistence.store(graphName, init);
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class GraphController implements Api.GraphController, Api.GraphManager, AutoCloseable {
+public class GraphController implements Api.GraphController, AutoCloseable {
 
     private static final String ISLES = "isles";
 

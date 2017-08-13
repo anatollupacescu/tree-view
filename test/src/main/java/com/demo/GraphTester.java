@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 public abstract class GraphTester implements Api.GraphController {
 
-    public abstract int getChildrenCount();
-
     public List<String> toList(String location) {
         String[] split = location.split("/");
         return Arrays.stream(split).filter(isNotRootOrEmpty()).collect(Collectors.toList());
