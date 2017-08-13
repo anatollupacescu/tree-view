@@ -1,6 +1,6 @@
 package com.ocado.demo;
 
-import com.ocado.demo.api.GraphController;
+import com.ocado.demo.oak.OakGraphController;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -15,15 +15,15 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class GraphControllerTest {
+public class OakGraphControllerTest {
 
-    private GraphController manager;
+    private OakGraphController manager;
     private String graphName = "test";
 
     @Before
     public void setUp() {
         SimpleCredentials admin = new SimpleCredentials("admin", "admin".toCharArray());
-        manager = new GraphController(admin);
+        manager = new OakGraphController(admin);
     }
 
     @Test
