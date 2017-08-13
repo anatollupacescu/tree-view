@@ -8,6 +8,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,22 +39,22 @@ public class TreeNodeSteps {
 
     @Then("^the root has (\\d+) (?:nodes?|node)$")
     public void root_has_nodes(int nodeCount) throws Throwable {
-        List<String> children = graphTester.list(graphName, Collections.emptyList());
+        Collection<String> children = graphTester.list(graphName, Collections.emptyList());
         Integer size = children.size();
         assertThat(size, is(equalTo(nodeCount)));
     }
 
     @And("^the node at (.*) contains (.*)$")
     public void parent_contains_child(String parentLocation, String childName) {
-        List<String> location = graphTester.toList(parentLocation);
-        List<String> children = graphTester.list(graphName, location);
+        Collection<String> location = graphTester.toList(parentLocation);
+        Collection<String> children = graphTester.list(graphName, new ArrayList<>(location));
         assertThat(children.contains(childName), is(equalTo(true)));
     }
 
     @And("^the node at (.*) has no children$")
     public void node_has_no_children(String parentLocation) {
-        List<String> location = graphTester.toList(parentLocation);
-        List<String> children = graphTester.list(graphName, location);
+        Collection<String> location = graphTester.toList(parentLocation);
+        Collection<String> children = graphTester.list(graphName, new ArrayList<>(location));
         assertThat(children.isEmpty(), is(equalTo(true)));
     }
 

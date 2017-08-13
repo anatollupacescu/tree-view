@@ -27,10 +27,10 @@ public class ClassGraphTester extends GraphTester {
     }
 
     @Override
-    public List<String> list(String graphName, List<String> location) {
+    public Set<String> list(String graphName, List<String> location) {
         Graph graph = graphs.get(graphName);
         Node node = graph.navigate(location);
-        return node.getChildren().stream().map(Node::getName).collect(Collectors.toList());
+        return node.getChildren().stream().map(Node::getName).collect(Collectors.toSet());
     }
 
     @Override

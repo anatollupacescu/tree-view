@@ -17,15 +17,11 @@ public class WebGraphTester extends GraphTester {
     private final RestTemplate client = new RestTemplate();
     private final String baseUrl = "http://localhost:8080/graph";
 
-    private final ParameterizedTypeReference<List<String>> listTypeReference = new ParameterizedTypeReference<List<String>>() {
-        public Type getType() {
-            return super.getType();
-        }
-    };
+    private final ParameterizedTypeReference<Set<String>> setTypeReference = new ParameterizedTypeReference<Set<String>>() {};
 
     @Override
     public Set<String> getNames() {
-        ResponseEntity<List<String>> response = client.exchange(baseUrl, HttpMethod.GET, null, listTypeReference);
+        ResponseEntity<Set<String>> response = client.exchange(baseUrl, HttpMethod.GET, null, setTypeReference);
         return new HashSet<>(response.getBody());
     }
 
@@ -42,10 +38,10 @@ public class WebGraphTester extends GraphTester {
     }
 
     @Override
-    public List<String> list(String graphName, List<String> location) {
+    public Set<String> list(String graphName, List<String> location) {
         String url = baseUrl + "/list/" + graphName;
         HttpEntity<List<String>> request = new HttpEntity<>(location);
-        ResponseEntity<List<String>> response = client.exchange(url, HttpMethod.POST, request, listTypeReference);
+        ResponseEntity<Set<String>> response = client.exchange(url, HttpMethod.POST, request, setTypeReference);
         return response.getBody();
     }
 
