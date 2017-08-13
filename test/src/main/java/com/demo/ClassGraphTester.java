@@ -1,6 +1,5 @@
 package com.demo;
 
-import com.demo.api.GraphNode;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
 
@@ -28,21 +27,21 @@ public class ClassGraphTester extends GraphTester {
 
     @Override
     public List<String> list(String graphName, List<String> location) {
-        GraphNode<Node> graph = graphs.get(graphName);
+        Graph graph = graphs.get(graphName);
         Node node = graph.navigate(location);
         return node.getChildren().stream().map(Node::getName).collect(Collectors.toList());
     }
 
     @Override
     public void add(String graphName, List<String> location, String nodeName) {
-        GraphNode<Node> graph = graphs.get(graphName);
+        Graph graph = graphs.get(graphName);
         Node parent = graph.navigate(location);
         parent.addChild(nodeName);
     }
 
     @Override
     public void remove(String graphName, List<String> location, String nodeName) {
-        GraphNode<Node> graph = graphs.get(graphName);
+        Graph graph = graphs.get(graphName);
         Node parent = graph.navigate(location);
         parent.removeChild(nodeName);
     }
