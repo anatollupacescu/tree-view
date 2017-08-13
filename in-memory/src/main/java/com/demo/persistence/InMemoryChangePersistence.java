@@ -7,7 +7,7 @@ import java.util.*;
 
 public class InMemoryChangePersistence implements Persistence<GraphChange> {
 
-    private Map<String, List<GraphChange>> changes = new HashMap<>();
+    private final Map<String, List<GraphChange>> changes = new HashMap<>();
 
     @Override
     public List<GraphChange> getByName(String name) {
@@ -21,11 +21,7 @@ public class InMemoryChangePersistence implements Persistence<GraphChange> {
 
     @Override
     public void store(String graph, GraphChange change) {
-        List<GraphChange> graphChanges = changes.get(graph);
-        if (graphChanges == null) {
-            graphChanges = new ArrayList<>();
-            changes.put(graph, graphChanges);
-        }
+        List<GraphChange> graphChanges = changes.computeIfAbsent(graph, k -> new ArrayList<>());
         graphChanges.add(change);
     }
 

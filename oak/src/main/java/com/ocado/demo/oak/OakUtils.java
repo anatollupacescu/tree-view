@@ -10,27 +10,27 @@ public class OakUtils {
 
     protected OakNode getOrCreateIslesNode(Session session) {
         try {
-            return getRootNode(session, ISLES);
+            return getIslesNode(session);
         } catch (NodeNotFoundException e) {
-            createNodeInRoot(session, ISLES);
-            return getRootNode(session, ISLES);
+            createIslesNode(session);
+            return getIslesNode(session);
         }
     }
 
-    private void createNodeInRoot(Session session, String isles) {
+    private void createIslesNode(Session session) {
         OakNode root = getRoot(session);
-        root.addChild(OakNode.withName(isles));
+        root.addChild(OakNode.withName(ISLES));
     }
 
-    private OakNode getRootNode(Session session, String graphName) {
+    private OakNode getIslesNode(Session session) {
         OakNode root = getRoot(session);
-        return root.getChild(graphName);
+        return root.getChild(ISLES);
     }
 
     private OakNode getRoot(Session session) {
         try {
             Node node = session.getRootNode();
-            return new OakNode(node);
+            return OakNode.withDelegate(node);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

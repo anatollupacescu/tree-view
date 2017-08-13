@@ -14,10 +14,10 @@ import static org.junit.Assert.assertThat;
 
 public class TreeSteps {
 
-    private GraphTester graphTester = TesterFactory.getTester();
+    private final GraphTester graphTester = TesterFactory.getTester();
 
     @Given("^no trees have been created$")
-    public void no_trees_have_been_created() throws Throwable {
+    public void no_trees_have_been_created() {
         Set<String> treeNames = graphTester.getNames();
         for (String tree : treeNames) {
             graphTester.remove(tree);
@@ -25,23 +25,23 @@ public class TreeSteps {
     }
 
     @When("^I create a tree called (.*)$")
-    public void i_create_a_tree_called_products(String graphName) throws Throwable {
+    public void i_create_a_tree_called_products(String graphName) {
         graphTester.create(graphName);
     }
 
     @When("^I remove the tree instance called (.*)$")
-    public void i_remove_the_tree_instance_called_alpha(String name) throws Throwable {
+    public void i_remove_the_tree_instance_called_alpha(String name) {
         graphTester.remove(name);
     }
 
     @Given("^a tree instance called (.*) is present$")
-    public void a_tree_instance_called_products_is_present(String name) throws Throwable {
+    public void a_tree_instance_called_products_is_present(String name) {
         Set<String> treeNames = graphTester.getNames();
         assertThat(treeNames.contains(name), is(equalTo(true)));
     }
 
     @Then("^the tree names array should have (\\d) (?:elements?|element)$")
-    public void a_tree_names_reponse_should_have_size(int size) throws Throwable {
+    public void a_tree_names_reponse_should_have_size(int size) {
         Set<String> treeNames = graphTester.getNames();
         assertThat(treeNames.size(), is(equalTo(size)));
     }

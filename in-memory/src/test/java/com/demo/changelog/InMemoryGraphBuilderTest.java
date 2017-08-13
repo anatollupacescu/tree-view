@@ -21,7 +21,7 @@ public class InMemoryGraphBuilderTest {
     public void canNotRemoveNonExistentChild() {
         ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange = new GraphChange(ChangeType.REMOVE_CHILD, data);
-        List<GraphChange> changes = Arrays.asList(graphChange);
+        List<GraphChange> changes = Collections.singletonList(graphChange);
         builder.build(GRAPH_NAME, changes);
     }
 
@@ -29,7 +29,7 @@ public class InMemoryGraphBuilderTest {
     public void canAddChild() {
         ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange = new GraphChange(ChangeType.ADD_CHILD, data);
-        List<GraphChange> changes = Arrays.asList(graphChange);
+        List<GraphChange> changes = Collections.singletonList(graphChange);
         Graph graph = builder.build(GRAPH_NAME, changes);
         Node lolo = graph.findChildByNameOrThrow("lolo");
         assertThat(lolo, is(notNullValue()));
@@ -53,7 +53,7 @@ public class InMemoryGraphBuilderTest {
     public void canNotAddChildToBadLocation() {
         ChangeData data = ChangeData.of("sub", Collections.singletonList("lolo"));
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
-        List<GraphChange> changes = Arrays.asList(graphChange2);
+        List<GraphChange> changes = Collections.singletonList(graphChange2);
         builder.build(GRAPH_NAME, changes);
     }
 

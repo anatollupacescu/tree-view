@@ -22,8 +22,9 @@ import static org.junit.Assert.assertThat;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OakGraphControllerTest {
 
+    private final String TEST = "test";
+
     private OakGraphController manager;
-    private String TEST = "test";
 
     @Before
     public void setUp() {
@@ -90,7 +91,7 @@ public class OakGraphControllerTest {
         manager.create(graphName);
     }
 
-    public void repoIsEmpty() throws RepositoryException {
+    private void repoIsEmpty() {
         Set<String> list = manager.list(TEST, Collections.emptyList());
         assertThat(list, is(notNullValue()));
         assertThat(list.isEmpty(), is(equalTo(true)));

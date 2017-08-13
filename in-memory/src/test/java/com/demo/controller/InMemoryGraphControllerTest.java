@@ -23,7 +23,7 @@ public class InMemoryGraphControllerTest {
     private static final String NODE_NAME1 = "node1";
     private static final String NODE_NAME2 = "node2";
 
-    public InMemoryGraphController createDefault() {
+    private InMemoryGraphController createDefault() {
         InMemoryChangePersistence persistence = new InMemoryChangePersistence();
         InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
         GraphViewer viewer = new NodeGraphViewer();

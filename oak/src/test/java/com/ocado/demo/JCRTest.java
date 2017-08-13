@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 
 public class JCRTest {
 
-    private SimpleCredentials credentials = new SimpleCredentials("admin", "admin".toCharArray());
+    private final SimpleCredentials credentials = new SimpleCredentials("admin", "admin".toCharArray());
 
     @Test
     public void testCommit() throws CommitFailedException {

@@ -69,7 +69,7 @@ public class Node implements GraphNode<Node> {
     }
 
     public Node findChildByNameOrThrow(String name) {
-        return findChildByName(name).orElseThrow(() -> new IllegalArgumentException());
+        return findChildByName(name).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

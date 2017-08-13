@@ -18,11 +18,12 @@ import static org.junit.Assert.assertThat;
 
 public class TreeNodeSteps {
 
+    private final GraphTester graphTester = TesterFactory.getTester();
+
     private String graphName;
-    private GraphTester graphTester = TesterFactory.getTester();
 
     @Given("^I have a tree called (.*)$")
-    public void i_have_a_tree(String graphName) throws Throwable {
+    public void i_have_a_tree(String graphName) {
         this.graphName = graphName;
         graphTester.create(graphName);
         assertThat(graphTester.getNames(), is(notNullValue()));
@@ -30,7 +31,7 @@ public class TreeNodeSteps {
     }
 
     @When("^I add the following nodes$")
-    public void i_add_following_nodes(List<GraphUpdate> list) throws Throwable {
+    public void i_add_following_nodes(List<GraphUpdate> list) {
         for (GraphUpdate graphUpdate : list) {
             List<String> location = graphTester.toList(graphUpdate.location);
             graphTester.add(graphName, location, graphUpdate.name);
@@ -38,7 +39,7 @@ public class TreeNodeSteps {
     }
 
     @Then("^the root has (\\d+) (?:nodes?|node)$")
-    public void root_has_nodes(int nodeCount) throws Throwable {
+    public void root_has_nodes(int nodeCount) {
         Collection<String> children = graphTester.list(graphName, Collections.emptyList());
         Integer size = children.size();
         assertThat(size, is(equalTo(nodeCount)));

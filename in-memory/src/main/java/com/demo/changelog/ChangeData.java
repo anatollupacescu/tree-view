@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.List;
 
 @Value(staticConstructor = "of")
-public class ChangeData {
+class ChangeData {
     private String name;
     private List<String> location;
 }

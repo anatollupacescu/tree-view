@@ -7,7 +7,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +21,10 @@ public class WebGraphTester extends GraphTester {
     @Override
     public Set<String> getNames() {
         ResponseEntity<Set<String>> response = client.exchange(baseUrl, HttpMethod.GET, null, setTypeReference);
-        return new HashSet<>(response.getBody());
+        if(response != null && response.getBody() != null) {
+            return new HashSet<>(response.getBody());
+        }
+        throw new IllegalStateException();
     }
 
     @Override

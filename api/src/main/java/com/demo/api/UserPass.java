@@ -1,8 +1,8 @@
 package com.demo.api;
 
 public class UserPass {
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
 
     public UserPass(String username, String password) {
         this.username = username;

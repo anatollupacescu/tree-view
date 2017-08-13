@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class OakNode implements Api.GraphNode<OakNode> {
@@ -16,11 +17,11 @@ public class OakNode implements Api.GraphNode<OakNode> {
     private Node delegate;
     private String name;
 
-    public OakNode(Node delegate) {
+    private OakNode(Node delegate) {
         this.delegate = delegate;
     }
 
-    public OakNode(String name) {
+    private OakNode(String name) {
         this.name = name;
     }
 
@@ -47,15 +48,18 @@ public class OakNode implements Api.GraphNode<OakNode> {
         Set<OakNode> nodes = new HashSet<>();
         try {
             NodeIterator iterator = delegate.getNodes();
-            iterator.forEachRemaining(node -> {
-                Node node1 = (Node) node;
-                OakNode e = withDelegate(node1);
-                nodes.add(e);
-            });
+            iterator.forEachRemaining(addToCollection(nodes));
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
         return nodes;
+    }
+
+    private Consumer<Node> addToCollection(Set<OakNode> nodes) {
+        return node -> {
+            OakNode e = withDelegate(node);
+            nodes.add(e);
+        };
     }
 
     @Override
@@ -100,11 +104,11 @@ public class OakNode implements Api.GraphNode<OakNode> {
         }
     }
 
-    public static OakNode withName(String isles) {
+    static OakNode withName(String isles) {
         return new OakNode(isles);
     }
 
-    public static OakNode withDelegate(Node rootNode) {
+    static OakNode withDelegate(Node rootNode) {
         return new OakNode(rootNode);
     }
 }
