@@ -12,10 +12,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class GraphBuilderTest {
+public class InMemoryGraphBuilderTest {
 
     private static final String GRAPH_NAME = "graph";
-    private static final GraphBuilder builder = new GraphBuilder();
+    private static final InMemoryGraphBuilder builder = new InMemoryGraphBuilder();
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void canNotRemoveNonExistentChild() {

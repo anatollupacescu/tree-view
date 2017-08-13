@@ -1,7 +1,8 @@
 package com.demo.persistence;
 
 import com.demo.changelog.GraphChange;
-import com.demo.changelog.GraphChangeBuilder;
+import com.demo.changelog.InMemoryGraphChangeBuilder;
+import com.demo.graph.api.GraphChangeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,11 +16,11 @@ import static org.junit.Assert.assertThat;
 
 public class ChangeServiceTest {
 
-    private GraphChangeBuilder changeService;
+    private GraphChangeBuilder<GraphChange> changeService;
 
     @Before
     public void setUp() {
-        changeService = new GraphChangeBuilder();
+        changeService = new InMemoryGraphChangeBuilder();
     }
 
     @Test

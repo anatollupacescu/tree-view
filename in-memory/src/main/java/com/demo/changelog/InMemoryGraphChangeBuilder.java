@@ -1,12 +1,12 @@
 package com.demo.changelog;
 
-import com.demo.api.Api;
+import com.demo.graph.api.GraphChangeBuilder;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class GraphChangeBuilder implements Api.GraphChangeBuilder<GraphChange> {
+public class InMemoryGraphChangeBuilder implements GraphChangeBuilder<GraphChange> {
 
     private GraphChange createNodeAtLocation(List<String> location, String name) {
         Objects.requireNonNull(location);

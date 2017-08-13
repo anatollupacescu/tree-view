@@ -1,9 +1,11 @@
 package com.demo.controller;
 
 import com.demo.api.Api;
-import com.demo.changelog.GraphBuilder;
-import com.demo.changelog.GraphChangeBuilder;
+import com.demo.changelog.InMemoryGraphBuilder;
+import com.demo.changelog.InMemoryGraphChangeBuilder;
 import com.demo.graph.Node;
+import com.demo.graph.api.GraphChangeBuilder;
+import com.demo.graph.api.GraphViewer;
 import com.demo.persistence.ChangePersistence;
 import org.junit.Test;
 
@@ -13,48 +15,48 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-public class GraphControllerTest {
+public class InMemoryGraphControllerTest {
 
     private static final String GRAPH_NAME = "graph1";
     private static final String NODE_NAME1 = "node1";
     private static final String NODE_NAME2 = "node2";
 
-    public GraphController createDefault() {
+    public InMemoryGraphController createDefault() {
         ChangePersistence persistence = new ChangePersistence();
-        GraphChangeBuilder changeService = new GraphChangeBuilder();
-        GraphBuilder graphBuilder = new GraphBuilder();
-        Api.GraphViewer viewer = new GraphViewer();
-        return new GraphController(persistence, changeService, graphBuilder, viewer);
+        InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
+        GraphViewer viewer = new NodeGraphViewer();
+        GraphChangeBuilder changeService = new InMemoryGraphChangeBuilder();
+        return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder, viewer);
     }
 
     @Test
     public void createDefaultCreatesInstance() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         assertThat(service, is(notNullValue()));
     }
 
     @Test
     public void isInitializedEmpty() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         assertThat(service.getNames().isEmpty(), is(equalTo(true)));
     }
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void canNotReadNonExistentGraph() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         service.list(GRAPH_NAME, Collections.singletonList(NODE_NAME1));
     }
 
     @Test
     public void canNotListRootNodesOfNonExistentGraph() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         List<String> list = service.list("noGo", Collections.emptyList());
         assertThat(list.isEmpty(), is(equalTo(true)));
     }
 
     @Test
     public void listNodesAtLocation() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         List<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
         assertThat(nodes, is(notNullValue()));
@@ -63,7 +65,7 @@ public class GraphControllerTest {
 
     @Test
     public void createNodeAtLocation() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         service.add(GRAPH_NAME, Collections.singletonList(NODE_NAME1), NODE_NAME2);
         List<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
@@ -77,21 +79,21 @@ public class GraphControllerTest {
     @Test(expected = Api.GraphNotFoundException.class)
     public void removeNodeAsFirstCommandFails() {
         List<String> location = Collections.singletonList(NODE_NAME1);
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         service.remove(GRAPH_NAME, location, NODE_NAME2);
     }
 
     @Test(expected = Node.NodeNotFoundException.class)
     public void removeNodeAtBadLocationFails() {
         List<String> location = Collections.singletonList(NODE_NAME1);
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         service.remove(GRAPH_NAME, location, NODE_NAME2);
     }
 
     @Test
     public void removeNodeAtLocationRemovesNode() {
-        GraphController service = createDefault();
+        InMemoryGraphController service = createDefault();
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         List<String> location = Collections.singletonList(NODE_NAME1);
         service.add(GRAPH_NAME, location, NODE_NAME2);

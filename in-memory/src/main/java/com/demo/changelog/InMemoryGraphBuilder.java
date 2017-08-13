@@ -1,13 +1,13 @@
 package com.demo.changelog;
 
-import com.demo.api.Api;
 import com.demo.graph.Graph;
 import com.demo.graph.Node;
+import com.demo.graph.api.GraphBuilder;
 
 import java.util.List;
 import java.util.Objects;
 
-public class GraphBuilder implements Api.GraphBuilder<GraphChange> {
+public class InMemoryGraphBuilder implements GraphBuilder<GraphChange> {
 
     public Graph build(String name, List<GraphChange> changes) {
         Objects.requireNonNull(name);
@@ -27,8 +27,10 @@ public class GraphBuilder implements Api.GraphBuilder<GraphChange> {
             case REMOVE_CHILD:
                 removeChild(graph, change);
                 break;
+            case CREATE_ROOT:
+                break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unknown command");
         }
     }
 

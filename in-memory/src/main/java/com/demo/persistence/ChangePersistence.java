@@ -1,11 +1,11 @@
 package com.demo.persistence;
 
-import com.demo.api.Api;
 import com.demo.changelog.GraphChange;
+import com.demo.graph.api.Persistence;
 
 import java.util.*;
 
-public class ChangePersistence implements Api.Persistence<GraphChange> {
+public class ChangePersistence implements Persistence<GraphChange> {
 
     private Map<String, List<GraphChange>> changes = new HashMap<>();
 

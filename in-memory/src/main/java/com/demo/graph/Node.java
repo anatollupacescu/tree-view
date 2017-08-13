@@ -1,6 +1,6 @@
 package com.demo.graph;
 
-import com.demo.api.GraphNode;
+import com.demo.graph.api.GraphNode;
 
 import java.util.ArrayList;
 import java.util.List;

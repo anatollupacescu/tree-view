@@ -1,25 +1,30 @@
 package com.demo.controller;
 
 import com.demo.api.Api;
-import com.demo.api.GraphNode;
+import com.demo.graph.api.GraphNode;
 import com.demo.changelog.GraphChange;
+import com.demo.graph.Node;
+import com.demo.graph.api.GraphBuilder;
+import com.demo.graph.api.GraphChangeBuilder;
+import com.demo.graph.api.GraphViewer;
+import com.demo.graph.api.Persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class GraphController implements Api.GraphController {
+public class InMemoryGraphController implements Api.GraphController {
 
-    private final Api.Persistence<GraphChange> persistence;
-    private final Api.GraphChangeBuilder<GraphChange> graphChangeBuilder;
-    private final Api.GraphBuilder builder;
-    private final Api.GraphViewer viewer;
+    private final Persistence<GraphChange> persistence;
+    private final GraphChangeBuilder<GraphChange> graphChangeBuilder;
+    private final GraphBuilder<GraphChange> builder;
+    private final GraphViewer viewer;
 
-    public GraphController(Api.Persistence<GraphChange> persistence,
-                           Api.GraphChangeBuilder graphChangeBuilder,
-                           Api.GraphBuilder builder,
-                           Api.GraphViewer viewer) {
+    public InMemoryGraphController(Persistence<GraphChange> persistence,
+                                   GraphChangeBuilder graphChangeBuilder,
+                                   GraphBuilder<GraphChange> builder,
+                                   GraphViewer viewer) {
         this.persistence = persistence;
         this.graphChangeBuilder = graphChangeBuilder;
         this.builder = builder;
@@ -47,7 +52,7 @@ public class GraphController implements Api.GraphController {
     @Override
     public List<String> list(String graphName, List<String> location) {
         List<GraphChange> changesByName = persistence.getByName(graphName);
-        GraphNode graph = builder.build(changesByName);
+        GraphNode<Node> graph = builder.build(changesByName);
         return viewer.list(graph, location);
     }
 
