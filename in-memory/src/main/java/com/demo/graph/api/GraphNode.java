@@ -1,4 +1,4 @@
-package com.demo.api;
+package com.demo.graph.api;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +14,4 @@ public interface GraphNode<T> {
     Optional<T> findChildByName(String name);
 
     T navigate(List<String> location);
-
-    default int getChildrenCount() {
-        return getChildren().size();
-    }
 }
