@@ -16,6 +16,8 @@ import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import javax.jcr.Repository;
 import java.util.function.Function;
@@ -28,40 +30,51 @@ public class TreeViewDemoApplication {
     }
 
     @Bean
-    public NodeStore nodeStore() {
-        return new MemoryNodeStore();
-    }
-
-    @Bean
-    public UserPass defaultUserPass(){
+    public UserPass defaultUserPass() {
         return new UserPass("admin", "admin");
     }
 
-    @Bean
-    public Repository repository() {
-        Jcr jcr = new Jcr(nodeStore());
-        return jcr.createRepository();
+    @Configuration
+    @Profile("oak")
+    class OakConfiguration {
+
+        @Bean
+        public NodeStore nodeStore() {
+            return new MemoryNodeStore();
+        }
+
+        @Bean
+        public Repository repository() {
+            Jcr jcr = new Jcr(nodeStore());
+            return jcr.createRepository();
+        }
+
+        @Bean
+        public Function<UserPass, Api.GraphController> controllerFactory() {
+            return userPass -> {
+                OakGraphController controller = new OakGraphController(repository());
+                controller.login(defaultUserPass());
+                return controller;
+            };
+        }
     }
 
-    public Function<UserPass, Api.GraphController> controllerFactoryOak() {
-        return userPass -> {
-            OakGraphController controller = new OakGraphController(repository());
-            controller.login(defaultUserPass());
-            return controller;
-        };
-    }
+    @Configuration
+    @Profile("default")
+    class InMemoryConfiguration {
 
-    @Bean
-    public Function<UserPass, Api.GraphController> controllerFactory() {
-       return userPass -> graphControllerInMemory();
-    }
+        @Bean
+        public Function<UserPass, Api.GraphController> controllerFactory() {
+            return userPass -> graphControllerInMemory();
+        }
 
-    @Bean
-    public Api.GraphController graphControllerInMemory() {
-        InMemoryChangePersistence persistence = new InMemoryChangePersistence();
-        InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
-        GraphViewer viewer = new NodeGraphViewer();
-        GraphChangeBuilder changeService = new InMemoryGraphChangeBuilder();
-        return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder, viewer);
+        @Bean
+        public Api.GraphController graphControllerInMemory() {
+            InMemoryChangePersistence persistence = new InMemoryChangePersistence();
+            InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
+            GraphViewer viewer = new NodeGraphViewer();
+            GraphChangeBuilder changeService = new InMemoryGraphChangeBuilder();
+            return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder, viewer);
+        }
     }
 }
