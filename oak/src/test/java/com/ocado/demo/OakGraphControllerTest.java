@@ -1,6 +1,7 @@
 package com.ocado.demo;
 
 import com.demo.api.UserPass;
+import com.ocado.demo.oak.NodeNotFoundException;
 import com.ocado.demo.oak.OakGraphController;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.memory.MemoryNodeStore;
@@ -12,9 +13,8 @@ import org.junit.runners.MethodSorters;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
-import javax.jcr.SimpleCredentials;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 public class OakGraphControllerTest {
 
     private OakGraphController manager;
-    private String graphName = "test";
+    private String TEST = "test";
 
     @Before
     public void setUp() {
@@ -40,12 +40,12 @@ public class OakGraphControllerTest {
 
     @Test(expected = RuntimeException.class)
     public void test2_rootNodeIsNotPresent() throws RepositoryException {
-        manager.list(graphName, Collections.emptyList());
+        manager.list(TEST, Collections.emptyList());
     }
 
     @Test
     public void test3_canAddRemoveNode() throws Exception {
-        createRepo();
+        createRepo(TEST);
         repoIsEmpty();
         String child1 = "child1";
         addChild(child1);
@@ -56,36 +56,42 @@ public class OakGraphControllerTest {
 
     @Test
     public void canNavigate() {
-        createRepo();
+        createRepo(TEST);
         String products1 = "products";
-        List<String> products = manager.list(graphName, Collections.emptyList());
+        Set<String> products = manager.list(TEST, Collections.emptyList());
         assertThat(products.isEmpty(), is(equalTo(true)));
-        manager.add(graphName, Collections.emptyList(), products1);
+        manager.add(TEST, Collections.emptyList(), products1);
         String butter = "butter";
-        manager.add(graphName, Collections.singletonList(products1), butter);
-        products = manager.list(graphName, Collections.singletonList(products1));
+        manager.add(TEST, Collections.singletonList(products1), butter);
+        products = manager.list(TEST, Collections.singletonList(products1));
         assertThat(products.isEmpty(), is(equalTo(false)));
     }
 
+    @Test(expected = NodeNotFoundException.class)
+    public void canNotNavigateToBadLocation() {
+        createRepo(TEST);
+        manager.list(TEST, Collections.singletonList("non-existent"));
+    }
+
     private void removeChild(String child1) {
-        manager.remove(graphName, Collections.emptyList(), child1);
+        manager.remove(TEST, Collections.emptyList(), child1);
     }
 
     private void assertChildrenCount(int i) {
-        List<String> list = manager.list(graphName, Collections.emptyList());
+        Set<String> list = manager.list(TEST, Collections.emptyList());
         assertThat(list.size(), is(equalTo(i)));
     }
 
     private void addChild(String child1) {
-        manager.add(graphName, Collections.emptyList(), child1);
+        manager.add(TEST, Collections.emptyList(), child1);
     }
 
-    private void createRepo() {
+    private void createRepo(String graphName) {
         manager.create(graphName);
     }
 
     public void repoIsEmpty() throws RepositoryException {
-        List<String> list = manager.list(graphName, Collections.emptyList());
+        Set<String> list = manager.list(TEST, Collections.emptyList());
         assertThat(list, is(notNullValue()));
         assertThat(list.isEmpty(), is(equalTo(true)));
     }

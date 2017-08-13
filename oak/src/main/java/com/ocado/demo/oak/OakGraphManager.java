@@ -19,28 +19,19 @@ public class OakGraphManager extends OakUtils implements Api.GraphManager {
 
     @Override
     public Set<String> getNames() {
-        Node islesNode = getOrCreateIslesNode(session);
-        List<String> names = mapChildrenToListOfStrings(islesNode);
-        return new HashSet<>(names);
+        OakNode islesNode = getOrCreateIslesNode(session);
+        return islesNode.getChildrenNames();
     }
 
     @Override
     public void remove(String graphName) {
-        Node root = getOrCreateIslesNode(session);
-        try {
-            root.getNode(graphName).remove();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+        OakNode root = getOrCreateIslesNode(session);
+        root.removeChild(OakNode.withName(graphName));
     }
 
     @Override
     public void create(String graphName) {
-        Node root = getOrCreateIslesNode(session);
-        try {
-            root.addNode(graphName);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+        OakNode root = getOrCreateIslesNode(session);
+        root.addChild(OakNode.withName(graphName));
     }
 }

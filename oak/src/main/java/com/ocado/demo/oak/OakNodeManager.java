@@ -2,10 +2,9 @@ package com.ocado.demo.oak;
 
 import com.demo.api.Api;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.util.List;
+import java.util.Set;
 
 public class OakNodeManager extends OakUtils implements Api.NodeManager {
 
@@ -16,60 +15,26 @@ public class OakNodeManager extends OakUtils implements Api.NodeManager {
     }
 
     @Override
-    public List<String> list(String graphName, List<String> location) {
-        Node isle = getIsle(session, graphName);
-        Node children = navigateToLocation(isle, location);
-        return mapChildrenToListOfStrings(children);
+    public Set<String> list(String graphName, List<String> location) {
+        OakNode isle = getIsle(session, graphName);
+        OakNode destination = isle.navigate(location);
+        return destination.getChildrenNames();
     }
 
     @Override
     public void add(String graphName, List<String> location, String nodeName) {
-        Node isle = getIsle(session, graphName);
-        Node parent = navigateToLocation(isle, location);
-        addChild(parent, nodeName);
+        OakNode isle = getIsle(session, graphName);
+        isle.navigate(location).addChild(OakNode.withName(nodeName));
     }
 
     @Override
     public void remove(String graphName, List<String> location, String nodeName) {
-        Node isle = getIsle(session, graphName);
-        Node parent = navigateToLocation(isle, location);
-        removeChild(parent, nodeName);
+        OakNode isle = getIsle(session, graphName);
+        isle.navigate(location).removeChild(OakNode.withName(nodeName));
     }
 
-    private void addChild(Node parent, String nodeName) {
-        try {
-            parent.addNode(nodeName);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void removeChild(Node parent, String nodeName) {
-        try {
-            parent.getNode(nodeName).remove();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Node getIsle(Session session, String name) {
-        Node rootNode = getOrCreateIslesNode(session);
-        return getChildNode(rootNode, name);
-    }
-
-    private Node navigateToLocation(Node rootNode, List<String> location) {
-        if (location.isEmpty()) return rootNode;
-        for (String node : location) {
-            rootNode = getChildNode(rootNode, node);
-        }
-        return rootNode;
-    }
-
-    private Node getChildNode(Node rootNode, String graphName) {
-        try {
-            return rootNode.getNode(graphName);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+    private OakNode getIsle(Session session, String name) {
+        OakNode rootNode = getOrCreateIslesNode(session);
+        return rootNode.getChild(name);
     }
 }

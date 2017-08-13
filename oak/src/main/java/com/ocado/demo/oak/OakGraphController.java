@@ -38,7 +38,7 @@ public class OakGraphController implements Api.GraphController {
     }
 
     @Override
-    public List<String> list(String graphName, List<String> location) {
+    public Set<String> list(String graphName, List<String> location) {
         Objects.requireNonNull(graphName);
         Objects.requireNonNull(location);
         return nodeManager.list(graphName, location);

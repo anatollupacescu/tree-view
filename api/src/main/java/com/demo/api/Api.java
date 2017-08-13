@@ -5,6 +5,21 @@ import java.util.Set;
 
 public class Api {
 
+    public interface GraphNode<T> {
+
+        void addChild(T node);
+
+        void removeChild(T node);
+
+        Set<T> getChildren();
+
+        Set<String> getChildrenNames();
+
+        T getChild(String name);
+
+        T navigate(List<String> location);
+    }
+
     public interface GraphManager {
         Set<String> getNames();
 
@@ -14,7 +29,7 @@ public class Api {
     }
 
     public interface NodeManager {
-        List<String> list(String graphName, List<String> location);
+        Set<String> list(String graphName, List<String> location);
 
         void add(String graphName, List<String> location, String nodeName);
 
