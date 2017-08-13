@@ -39,7 +39,7 @@ public class GraphBuilderTest {
     public void canAddChildToLocation() {
         ChangeData data = ChangeData.of("lolo", Collections.emptyList());
         GraphChange graphChange1 = new GraphChange(ChangeType.ADD_CHILD, data);
-        data = ChangeData.of("sub",Collections.singletonList("lolo"));
+        data = ChangeData.of("sub", Collections.singletonList("lolo"));
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange1, graphChange2);
         Graph graph = builder.build(GRAPH_NAME, changes);

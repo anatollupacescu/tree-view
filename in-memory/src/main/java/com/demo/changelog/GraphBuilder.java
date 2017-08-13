@@ -7,9 +7,6 @@ import com.demo.graph.Node;
 import java.util.List;
 import java.util.Objects;
 
-import static com.demo.changelog.ChangeType.ADD_CHILD;
-import static com.demo.changelog.ChangeType.REMOVE_CHILD;
-
 public class GraphBuilder implements Api.GraphBuilder<GraphChange> {
 
     public Graph build(String name, List<GraphChange> changes) {

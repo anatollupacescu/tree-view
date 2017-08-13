@@ -102,7 +102,7 @@ public class GraphController implements Api.GraphController, AutoCloseable {
     }
 
     private Node navigateToLocation(Node rootNode, List<String> location) {
-        if(location.isEmpty()) return rootNode;
+        if (location.isEmpty()) return rootNode;
         for (String node : location) {
             rootNode = getChildNode(rootNode, node);
         }
@@ -142,7 +142,7 @@ public class GraphController implements Api.GraphController, AutoCloseable {
     private Node getOrCreateIslesNode() {
         try {
             return getRootNode(ISLES);
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             createNodeInRoot(ISLES);
             return getRootNode(ISLES);
         }

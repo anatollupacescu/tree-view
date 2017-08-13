@@ -31,6 +31,6 @@ public class ChangePersistence implements Api.Persistence<GraphChange> {
 
     @Override
     public void clear(String graph) {
-       changes.remove(graph);
+        changes.remove(graph);
     }
 }

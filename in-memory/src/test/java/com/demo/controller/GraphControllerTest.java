@@ -1,8 +1,8 @@
 package com.demo.controller;
 
 import com.demo.api.Api;
-import com.demo.changelog.GraphChangeBuilder;
 import com.demo.changelog.GraphBuilder;
+import com.demo.changelog.GraphChangeBuilder;
 import com.demo.graph.Node;
 import com.demo.persistence.ChangePersistence;
 import org.junit.Test;

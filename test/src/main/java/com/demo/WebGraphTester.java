@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class WebGraphTester extends GraphTester {
 
@@ -28,7 +30,8 @@ public class WebGraphTester extends GraphTester {
 
     @Override
     public void remove(String graphName) {
-        client.exchange(baseUrl + "/delete/" + graphName, HttpMethod.DELETE, null, Void.class);
+        String url = baseUrl + "/delete/" + graphName;
+        client.exchange(url, HttpMethod.DELETE, null, Void.class);
     }
 
     @Override
@@ -39,24 +42,24 @@ public class WebGraphTester extends GraphTester {
 
     @Override
     public List<String> list(String graphName, List<String> location) {
-        HttpEntity<List<String>> request = new HttpEntity<>(location);
         String url = baseUrl + "/list/" + graphName;
-        ResponseEntity<List<String>> response =client.exchange(url, HttpMethod.POST, request, listTypeReference);
+        HttpEntity<List<String>> request = new HttpEntity<>(location);
+        ResponseEntity<List<String>> response = client.exchange(url, HttpMethod.POST, request, listTypeReference);
         return response.getBody();
     }
 
     @Override
     public void add(String graphName, List<String> location, String nodeName) {
-        HttpEntity<List<String>> request = new HttpEntity<>(location);
         String url = String.format("%s/create/%s/%s", baseUrl, graphName, nodeName);
+        HttpEntity<List<String>> request = new HttpEntity<>(location);
         ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, request, String.class);
         checkStatus(response);
     }
 
     @Override
     public void remove(String graphName, List<String> location, String nodeName) {
-        HttpEntity<List<String>> request = new HttpEntity<>(location);
         String url = String.format("%s/delete/%s/%s", baseUrl, graphName, nodeName);
+        HttpEntity<List<String>> request = new HttpEntity<>(location);
         ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, request, String.class);
         checkStatus(response);
     }
@@ -66,5 +69,4 @@ public class WebGraphTester extends GraphTester {
             throw new IllegalStateException("Could not delete");
         }
     }
-
 }
