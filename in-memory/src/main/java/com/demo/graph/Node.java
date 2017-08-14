@@ -1,14 +1,12 @@
 package com.demo.graph;
 
-import com.demo.graph.api.GraphNode;
+import com.demo.api.Api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class Node implements GraphNode<Node> {
+public class Node implements Api.GraphNode<Node> {
 
     private final String name;
     private final Node parent;
@@ -51,25 +49,22 @@ public class Node implements GraphNode<Node> {
     }
 
     @Override
-    public List<Node> getChildren() {
-        return new ArrayList<>(children);
+    public Set<Node> getChildren() {
+        return new HashSet<>(children);
+    }
+
+    @Override
+    public Set<String> getChildrenNames() {
+        return children.stream().map(Node::getName).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Node getChild(String name) {
+        return findChildByNameOrThrow(name);
     }
 
     public String getName() {
         return name;
-    }
-
-    private Optional<Node> findChild(Predicate<Node> pred) {
-        return children.stream().filter(pred).findAny();
-    }
-
-    @Override
-    public Optional<Node> findChildByName(String name) {
-        return findChild(byName(name));
-    }
-
-    public Node findChildByNameOrThrow(String name) {
-        return findChildByName(name).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override
@@ -85,9 +80,21 @@ public class Node implements GraphNode<Node> {
     }
 
     public static class NodeNotFoundException extends RuntimeException {
+
         public NodeNotFoundException() {
             super("Node not found");
         }
+    }
+    private Optional<Node> findChildByName(String name) {
+        return findChild(byName(name));
+    }
+
+    private Optional<Node> findChild(Predicate<Node> pred) {
+        return children.stream().filter(pred).findAny();
+    }
+
+    private Node findChildByNameOrThrow(String name) {
+        return findChildByName(name).orElseThrow(IllegalArgumentException::new);
     }
 
     private Predicate<Node> byName(String name) {

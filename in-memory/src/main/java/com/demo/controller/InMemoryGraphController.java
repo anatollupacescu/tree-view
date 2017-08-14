@@ -2,12 +2,11 @@ package com.demo.controller;
 
 import com.demo.api.Api;
 import com.demo.api.UserPass;
-import com.demo.graph.api.GraphNode;
+import com.demo.changelog.ChangeType;
 import com.demo.changelog.GraphChange;
 import com.demo.graph.Node;
 import com.demo.graph.api.GraphBuilder;
 import com.demo.graph.api.GraphChangeBuilder;
-import com.demo.graph.api.GraphViewer;
 import com.demo.graph.api.Persistence;
 
 import java.util.ArrayList;
@@ -20,16 +19,13 @@ public class InMemoryGraphController implements Api.GraphController {
     private final Persistence<GraphChange> persistence;
     private final GraphChangeBuilder<GraphChange> graphChangeBuilder;
     private final GraphBuilder<GraphChange> builder;
-    private final GraphViewer viewer;
 
     public InMemoryGraphController(Persistence<GraphChange> persistence,
                                    GraphChangeBuilder graphChangeBuilder,
-                                   GraphBuilder<GraphChange> builder,
-                                   GraphViewer viewer) {
+                                   GraphBuilder<GraphChange> builder) {
         this.persistence = persistence;
         this.graphChangeBuilder = graphChangeBuilder;
         this.builder = builder;
-        this.viewer = viewer;
     }
 
     @Override
@@ -53,8 +49,9 @@ public class InMemoryGraphController implements Api.GraphController {
     @Override
     public Set<String> list(String graphName, List<String> location) {
         List<GraphChange> changesByName = persistence.getByName(graphName);
-        GraphNode<Node> graph = builder.build(changesByName);
-        return viewer.list(graph, location);
+        if(changesByName.isEmpty()) throw new Api.GraphNotFoundException();
+        Api.GraphNode<Node> graph = builder.build(changesByName);
+        return graph.navigate(location).getChildrenNames();
     }
 
     @Override
@@ -76,6 +73,8 @@ public class InMemoryGraphController implements Api.GraphController {
 
     private void checkGraphIsPresent(List<GraphChange> changesByName) {
         if (changesByName.isEmpty()) throw new Api.GraphNotFoundException();
+        GraphChange firstCommand = changesByName.iterator().next();
+        if(firstCommand.getType() != ChangeType.CREATE_ROOT) throw new Api.GraphNotFoundException();
     }
 
     private void validateChange(List<GraphChange> graphChanges, GraphChange change) {

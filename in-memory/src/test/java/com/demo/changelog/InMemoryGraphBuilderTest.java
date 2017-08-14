@@ -31,7 +31,7 @@ public class InMemoryGraphBuilderTest {
         GraphChange graphChange = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Collections.singletonList(graphChange);
         Graph graph = builder.build(GRAPH_NAME, changes);
-        Node lolo = graph.findChildByNameOrThrow("lolo");
+        Node lolo = graph.getChild("lolo");
         assertThat(lolo, is(notNullValue()));
     }
 
@@ -43,9 +43,9 @@ public class InMemoryGraphBuilderTest {
         GraphChange graphChange2 = new GraphChange(ChangeType.ADD_CHILD, data);
         List<GraphChange> changes = Arrays.asList(graphChange1, graphChange2);
         Graph graph = builder.build(GRAPH_NAME, changes);
-        Node lolo = graph.findChildByNameOrThrow("lolo");
+        Node lolo = graph.getChild("lolo");
         assertThat(lolo, is(notNullValue()));
-        Node sub = lolo.findChildByNameOrThrow("sub");
+        Node sub = lolo.getChild("sub");
         assertThat(sub, is(notNullValue()));
     }
 

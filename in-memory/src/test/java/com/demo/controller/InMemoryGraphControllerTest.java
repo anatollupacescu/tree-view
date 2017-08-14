@@ -5,7 +5,6 @@ import com.demo.changelog.InMemoryGraphBuilder;
 import com.demo.changelog.InMemoryGraphChangeBuilder;
 import com.demo.graph.Node;
 import com.demo.graph.api.GraphChangeBuilder;
-import com.demo.graph.api.GraphViewer;
 import com.demo.persistence.InMemoryChangePersistence;
 import org.junit.Test;
 
@@ -26,9 +25,8 @@ public class InMemoryGraphControllerTest {
     private InMemoryGraphController createDefault() {
         InMemoryChangePersistence persistence = new InMemoryChangePersistence();
         InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
-        GraphViewer viewer = new NodeGraphViewer();
         GraphChangeBuilder changeService = new InMemoryGraphChangeBuilder();
-        return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder, viewer);
+        return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder);
     }
 
     @Test
@@ -43,17 +41,16 @@ public class InMemoryGraphControllerTest {
         assertThat(service.getNames().isEmpty(), is(equalTo(true)));
     }
 
-    @Test(expected = Node.NodeNotFoundException.class)
+    @Test(expected = Api.GraphNotFoundException.class)
     public void canNotReadNonExistentGraph() {
         InMemoryGraphController service = createDefault();
         service.list(GRAPH_NAME, Collections.singletonList(NODE_NAME1));
     }
 
-    @Test
+    @Test(expected = Api.GraphNotFoundException.class)
     public void canNotListRootNodesOfNonExistentGraph() {
         InMemoryGraphController service = createDefault();
-        Set<String> list = service.list("noGo", Collections.emptyList());
-        assertThat(list.isEmpty(), is(equalTo(true)));
+        service.list("noGo", Collections.emptyList());
     }
 
     @Test
@@ -63,6 +60,13 @@ public class InMemoryGraphControllerTest {
         Set<String> nodes = service.list(GRAPH_NAME, Collections.emptyList());
         assertThat(nodes, is(notNullValue()));
         assertThat(nodes.size(), is(equalTo(1)));
+    }
+
+    @Test(expected = Node.NodeNotFoundException.class)
+    public void canNotListNodesAtBadLocation() {
+        InMemoryGraphController service = createDefault();
+        service.create(GRAPH_NAME);
+        service.list(GRAPH_NAME, Collections.singletonList(NODE_NAME1));
     }
 
     @Test
@@ -89,6 +93,7 @@ public class InMemoryGraphControllerTest {
     public void removeNodeAtBadLocationFails() {
         Set<String> location = Collections.singleton(NODE_NAME1);
         InMemoryGraphController service = createDefault();
+        service.create(GRAPH_NAME);
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         service.remove(GRAPH_NAME, new ArrayList<>(location), NODE_NAME2);
     }
@@ -96,6 +101,7 @@ public class InMemoryGraphControllerTest {
     @Test
     public void removeNodeAtLocationRemovesNode() {
         InMemoryGraphController service = createDefault();
+        service.create(GRAPH_NAME);
         service.add(GRAPH_NAME, Collections.emptyList(), NODE_NAME1);
         List<String> location = Collections.singletonList(NODE_NAME1);
         service.add(GRAPH_NAME, location, NODE_NAME2);

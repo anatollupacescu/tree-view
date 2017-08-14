@@ -5,9 +5,7 @@ import com.demo.api.UserPass;
 import com.demo.changelog.InMemoryGraphBuilder;
 import com.demo.changelog.InMemoryGraphChangeBuilder;
 import com.demo.controller.InMemoryGraphController;
-import com.demo.controller.NodeGraphViewer;
 import com.demo.graph.api.GraphChangeBuilder;
-import com.demo.graph.api.GraphViewer;
 import com.demo.persistence.InMemoryChangePersistence;
 import com.ocado.demo.oak.OakGraphController;
 import org.apache.jackrabbit.oak.jcr.Jcr;
@@ -72,9 +70,8 @@ public class TreeViewDemoApplication {
         public Api.GraphController graphControllerInMemory() {
             InMemoryChangePersistence persistence = new InMemoryChangePersistence();
             InMemoryGraphBuilder inMemoryGraphBuilder = new InMemoryGraphBuilder();
-            GraphViewer viewer = new NodeGraphViewer();
             GraphChangeBuilder changeService = new InMemoryGraphChangeBuilder();
-            return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder, viewer);
+            return new InMemoryGraphController(persistence, changeService, inMemoryGraphBuilder);
         }
     }
 }
