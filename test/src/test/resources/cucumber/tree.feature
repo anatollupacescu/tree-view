@@ -10,4 +10,16 @@ Feature: User can manipulate tree instances
  Scenario: User can remove tree instance
     Given a tree instance called products is present
     When I remove the tree instance called products
-    Then the tree names array should have 0 element
+    Then the tree names array should have 0 elements
+
+ Scenario: User can remove a particular tree instance
+    Given two trees, alpha and beta, are present
+    When I remove the tree instance called beta
+    Then the tree names array should have 1 element
+    And the tree names array should contain the name alpha
+
+ Scenario: User can remove multiple tree instances
+    Given two trees, alpha and beta, are present
+    When I remove the tree instance called beta
+    And I remove the tree instance called alpha
+    Then the tree names array should have 0 elements

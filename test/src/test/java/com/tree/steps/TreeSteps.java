@@ -18,6 +18,10 @@ public class TreeSteps {
 
     @Given("^no trees have been created$")
     public void no_trees_have_been_created() {
+        removeAll();
+    }
+
+    private void removeAll() {
         Set<String> treeNames = graphTester.getNames();
         for (String tree : treeNames) {
             graphTester.remove(tree);
@@ -44,5 +48,18 @@ public class TreeSteps {
     public void a_tree_names_reponse_should_have_size(int size) {
         Set<String> treeNames = graphTester.getNames();
         assertThat(treeNames.size(), is(equalTo(size)));
+    }
+
+    @Given("^two trees, alpha and beta, are present$")
+    public void two_trees_alpha_and_beta_are_present() throws Throwable {
+        removeAll();
+        graphTester.create("alpha");
+        graphTester.create("beta");
+    }
+
+    @Then("^the tree names array should contain the name (.*)$")
+    public void the_tree_names_array_should_contain_the_name_alpha(String graphName) throws Throwable {
+        Set<String> treeNames = graphTester.getNames();
+        assertThat(treeNames.contains(graphName), is(equalTo(true)));
     }
 }
