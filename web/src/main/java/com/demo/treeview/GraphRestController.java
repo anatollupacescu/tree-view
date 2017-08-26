@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,8 @@ public class GraphRestController {
         }
     }
 
+    private final AtomicInteger id = new AtomicInteger(0);
+
     @GetMapping(value = "/render/{name}", produces = "application/json")
     @ResponseBody
     public List<Content> renderGraph(@PathVariable @NotNull String name) {
@@ -53,7 +56,7 @@ public class GraphRestController {
         List<String> subLocation = new ArrayList<>(location);
         subLocation.add(node);
         List<Content> nodes = toContentList(graphController, name, subLocation);
-        return Content.of(node, null, null, nodes);
+        return Content.of(id.incrementAndGet(), node, nodes);
     }
 
     @DeleteMapping(value = "/delete/{graphName}")
@@ -143,9 +146,8 @@ public class GraphRestController {
 
     @Value(staticConstructor = "of")
     public static class Content {
-        private String text; //: 'Parent 1',
-        private String href; //: '#parent1',
-        private List<String> tags; //: ['4'],
-        private List<Content> nodes; //: [
+        private long id;
+        private String text;
+        private List<Content> children;
     }
 }

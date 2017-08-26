@@ -178,7 +178,7 @@
                     <li><a class="fa fa-plus" href="#" onClick="javascript:addNode()"> Add</a></li>
                     <li><a class="fa fa-check" href="#"> Edit</a></li>
                     <li class="divider"></li>
-                    <li><a class="fa fa-minus" href="#" onClick="removeNode"> Remove</a></li>
+                    <li><a class="fa fa-minus" href="#" onClick="javascript:removeNode()"> Remove</a></li>
                 </ul>
             </div> 
         </div>
@@ -205,7 +205,7 @@
 <script src="assets/js/jquery.scrollTo.min.js"></script>
 <script src="assets/js/jquery.nicescroll.js" type="text/javascript"></script>
 <script src="assets/js/jquery.sparkline.js"></script>
-
+<script src="../js/app.js"></script>
 
 <!--common script for all pages-->
 <script src="assets/js/common-scripts.js"></script>
@@ -218,118 +218,45 @@
 <script src="assets/js/zabuto_calendar.js"></script>
 <script src="assets/js/bootstrap-treeview.js"></script>
 <script type="text/javascript">
-
-const appUrl = "http://localhost:8080/graph/";
-
-var treeData = [
-                { "text": "node1", "href": null, "tags": null, "nodes": [] },
-                { "text": "node2", "href": null, "tags": null, "nodes": [
-                    { "text": "subNode1", "href": null, "tags": null, "nodes": [ { "text": "subSub", "href": null, "tags": null, "nodes": [] } ] }
-                ]}];
-
-var currentNodePath = {};
-
-function getSelectedNodePath(event, data) {
-    currentNodePath = [ data.text ];
-    var parent = $('#tree').treeview('getParent', data);
-    while(typeof parent !== "undefined" && typeof parent.nodeId !== "undefined") {
-        currentNodePath.push(parent.text);
-        parent = $('#tree').treeview('getParent', parent);
-    }
-}
-
-function addNode() {
-    //ajax call with node text and currentNodePath
-    // onSuccess -> attach node to currentNode
-    // render Tree
-    var graphName = $("#graphName").val();
-    var nodeName = prompt("Node name:","");
-    if(typeof nodeName !== "undefined" && "" !== nodeName) {
-        var request = $.ajax({
-            type: "POST",
-            url: appUrl + "create/" + graphName + "/" + nodeName,
-            contentType: 'application/json; charset=UTF-8',
-            data: JSON.stringify(currentNodePath.reverse())
-        });
-        request.done(function (response, textStatus, jqXHR){
-            refreshTree();
-            console.log("Hooray, it worked!");
-        });
-        request.fail(function(response, textStatus, jqXHR){
-            console.log(response);
-            console.log(textStatus);
-        });
-    }
-}
-
-function renderTree() {
-    $('#tree').treeview({
-        color: "#428bca",
-        expandIcon: "glyphicon glyphicon-stop",
-        collapseIcon: "glyphicon glyphicon-unchecked",
-        nodeIcon: "glyphicon glyphicon-bag",
-        showTags: true,
-        data: treeData,
-        onNodeSelected: getSelectedNodePath
-    });
-}
-
-function refreshTree() {
-    var graphName = $("#graphName").val();
-    if(typeof graphName !== "undefined" && graphName !== "") {
-        $.ajax({
-            type: "GET",
-            url: appUrl + "render/" + graphName
-        }).then(function(receivedData) {
-            treeData = receivedData;
-            renderTree();
-        });
-    }
-}
-
 $(document).ready(function() {
-    renderTree();
     $("#lookup").on("click", function() {
         refreshTree();
     });
 });
-
 </script>
 
 <script type="application/javascript">
-        $(document).ready(function () {
-            $("#date-popover").popover({html: true, trigger: "manual"});
-            $("#date-popover").hide();
-            $("#date-popover").click(function (e) {
-                $(this).hide();
-            });
-        
-            $("#my-calendar").zabuto_calendar({
-                action: function () {
-                    return myDateFunction(this.id, false);
-                },
-                action_nav: function () {
-                    return myNavFunction(this.id);
-                },
-                ajax: {
-                    url: "show_data.php?action=1",
-                    modal: true
-                },
-                legend: [
-                    {type: "text", label: "Special event", badge: "00"},
-                    {type: "block", label: "Regular event", }
-                ]
-            });
-        });
-        
-        function myNavFunction(id) {
-            $("#date-popover").hide();
-            var nav = $("#" + id).data("navigation");
-            var to = $("#" + id).data("to");
-            console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
-        }
+$(document).ready(function () {
+    $("#date-popover").popover({html: true, trigger: "manual"});
+    $("#date-popover").hide();
+    $("#date-popover").click(function (e) {
+        $(this).hide();
+    });
 
+    $("#my-calendar").zabuto_calendar({
+        action: function () {
+            return myDateFunction(this.id, false);
+        },
+        action_nav: function () {
+            return myNavFunction(this.id);
+        },
+        ajax: {
+            url: "show_data.php?action=1",
+            modal: true
+        },
+        legend: [
+            {type: "text", label: "Special event", badge: "00"},
+            {type: "block", label: "Regular event", }
+        ]
+    });
+});
 
+function myNavFunction(id) {
+    $("#date-popover").hide();
+    var nav = $("#" + id).data("navigation");
+    var to = $("#" + id).data("to");
+    console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
+}
 </script>
 </body>
 </html>
