@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
         format = {"pretty", "html:target/cucumber"},
         glue = "com.tree.steps",
         features = {
-                "classpath:cucumber/tree.feature",
+//                "classpath:cucumber/tree.feature",
                 "classpath:cucumber/tree-nodes.feature"
         }
 )

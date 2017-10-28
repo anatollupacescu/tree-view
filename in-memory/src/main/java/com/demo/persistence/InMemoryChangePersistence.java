@@ -1,6 +1,7 @@
 package com.demo.persistence;
 
 import com.demo.changelog.GraphChange;
+import com.demo.graph.Graph;
 import com.demo.graph.api.Persistence;
 
 import java.util.*;
@@ -11,7 +12,7 @@ public class InMemoryChangePersistence implements Persistence<GraphChange> {
 
     @Override
     public List<GraphChange> getByName(String name) {
-        return Optional.ofNullable(changes.get(name)).orElse(Collections.emptyList());
+        return getByKey(name);
     }
 
     @Override
@@ -21,8 +22,11 @@ public class InMemoryChangePersistence implements Persistence<GraphChange> {
 
     @Override
     public void store(String graph, GraphChange change) {
-        List<GraphChange> graphChanges = changes.computeIfAbsent(graph, k -> new ArrayList<>());
-        graphChanges.add(change);
+        getByKey(graph).add(change);
+    }
+
+    private List<GraphChange> getByKey(String key) {
+        return changes.computeIfAbsent(key, k -> new ArrayList<>());
     }
 
     @Override

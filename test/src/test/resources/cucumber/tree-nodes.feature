@@ -4,7 +4,7 @@ Feature: User can manipulate tree contents
   So that I can change its state
 
  Scenario: User can add nodes to the tree
-   Given I have a tree called root1
+   Given I have a tree called first
    When I add the following nodes
 
      | location        | name       |

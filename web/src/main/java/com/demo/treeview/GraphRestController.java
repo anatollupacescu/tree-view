@@ -131,7 +131,7 @@ public class GraphRestController {
         List<String> locationList = toList(location);
         try(Api.GraphController graphController = controllerFactory.apply(defaultUserPass)) {
             graphController.remove(graphName, locationList, nodeName);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
     }
 
